@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Represents a single chess piece
@@ -10,7 +10,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessGame.TeamColor pieceColor;
+    private final PieceType type;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -46,7 +51,11 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+    public ArrayList<ChessPosition> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        if (type == PieceType.BISHOP) {
+            ArrayList<ChessPosition> moves = new ArrayList<>();
+            return moves;
+        }
+        return null;
     }
 }

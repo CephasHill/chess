@@ -78,7 +78,7 @@ public class ChessPiece {
     public ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // BISHOP
-        if (type == PieceType.BISHOP) {
+        if (type == PieceType.BISHOP || type == PieceType.QUEEN) {
             boolean up_right_clear = true;
             boolean down_left_clear = true;
             boolean up_left_clear = true;
@@ -242,7 +242,7 @@ public class ChessPiece {
             }
         }
         // ROOK
-        if (type == PieceType.ROOK) {
+        if (type == PieceType.ROOK || type == PieceType.QUEEN) {
             boolean up_clear = true;
             boolean down_clear = true;
             boolean left_clear = true;

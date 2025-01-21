@@ -42,7 +42,38 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        // middle space
+        for (int row = 2; row < 6; row++) {
+            for (int column = 0; column < 8; column++) {
+                squares[row][column] = null;
+            }
+        }
+        // pawns
+        for (int column = 0; column < 8; column++) {
+            squares[1][column] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+            squares[6][column] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        }
+        // rooks
+        squares[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        squares[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        squares[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        squares[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        // knights
+        squares[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        squares[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        squares[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        squares[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        // bishops
+        squares[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        squares[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        squares[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        squares[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        // queens
+        squares[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        squares[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        // kings
+        squares[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
     }
 
     @Override
@@ -61,8 +92,52 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.toString(squares) +
-                '}';
+        StringBuilder boardString = new StringBuilder();
+        boardString.append("  a b c d e f g h\n"); // Column labels
+
+        for (int row = 0; row < 8; row++) {
+            boardString.append(8 - row).append(" "); // Row labels (8-1 at the side)
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = squares[row][col];
+                if (piece == null) {
+                    boardString.append(". "); // Empty squares represented as dots
+                } else {
+                    String pieceSymbol = getPieceSymbol(piece);
+                    boardString.append(pieceSymbol).append(" ");
+                }
+            }
+            boardString.append(8 - row).append("\n"); // Row labels on the other side
+        }
+        boardString.append("  a b c d e f g h"); // Bottom column labels
+
+        return boardString.toString();
+    }
+
+    private String getPieceSymbol(ChessPiece piece) {
+        String symbol;
+        switch (piece.getPieceType()) {
+            case PAWN:
+                symbol = "P";
+                break;
+            case ROOK:
+                symbol = "R";
+                break;
+            case KNIGHT:
+                symbol = "N";
+                break;
+            case BISHOP:
+                symbol = "B";
+                break;
+            case QUEEN:
+                symbol = "Q";
+                break;
+            case KING:
+                symbol = "K";
+                break;
+            default:
+                symbol = "?";
+        }
+        // Use lowercase for black pieces and uppercase for white pieces
+        return piece.getTeamColor() == ChessGame.TeamColor.BLACK ? symbol.toLowerCase() : symbol.toUpperCase();
     }
 }

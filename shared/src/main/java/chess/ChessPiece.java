@@ -298,6 +298,49 @@ public class ChessPiece {
                 }
             }
         }
+        // KING
+        if (type == PieceType.KING) {
+            // down left
+            if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() - 1)
+                    && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn() - 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), type));
+            }
+            // left
+            if (inBounds(myPosition.getRow(), myPosition.getColumn() - 1)
+                    && !friendlyFire(board, myPosition.getRow(), myPosition.getColumn() - 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1), type));
+            }
+            // up left
+            if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() - 1)
+                    && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn() - 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), type));
+            }
+            // up
+            if (inBounds(myPosition.getRow() + 1, myPosition.getColumn())
+                    && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn())) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), type));
+            }
+            // up right
+            if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() + 1)
+                    && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn() + 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), type));
+            }
+            // right
+            if (inBounds(myPosition.getRow(), myPosition.getColumn() + 1)
+                    && !friendlyFire(board, myPosition.getRow(), myPosition.getColumn() + 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1), type));
+            }
+            // down right
+            if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() + 1)
+                    && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn() + 1)) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), type));
+            }
+            // down
+            if (inBounds(myPosition.getRow() - 1, myPosition.getColumn())
+                    && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn())) {
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), type));
+            }
+        }
         return moves;
     }
 

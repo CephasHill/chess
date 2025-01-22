@@ -93,11 +93,11 @@ public class ChessPiece {
                     if (inBounds(newRow,newCol)) {
                         up_right_clear = isClear(board, newRow, newCol);
                         if (up_right_clear) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
                                 !friendlyFire(board, newRow, newCol)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                     }
                 }
@@ -108,11 +108,11 @@ public class ChessPiece {
                     if (inBounds(newRow,newCol)) {
                         down_left_clear = isClear(board, newRow, newCol);
                         if (down_left_clear) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
                                 !friendlyFire(board, newRow, newCol)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                     }
                 }
@@ -123,11 +123,11 @@ public class ChessPiece {
                     if (inBounds(newRow,newCol)) {
                         up_left_clear = isClear(board, newRow, newCol);
                         if (up_left_clear) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
                                 !friendlyFire(board, newRow, newCol)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                     }
                 }
@@ -138,11 +138,11 @@ public class ChessPiece {
                     if (inBounds(newRow,newCol)) {
                         down_right_clear = isClear(board, newRow, newCol);
                         if (down_right_clear) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
                                 !friendlyFire(board, newRow, newCol)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                     }
                 }
@@ -163,7 +163,7 @@ public class ChessPiece {
             ChessPosition pos2 = new ChessPosition(myPosition.getRow() + 2*adv, myPosition.getColumn());
             if (isClear(board, pos1.getRow(), pos1.getColumn())) { // check 1 space ahead
                 if (pos1.getRow() != promote) {
-                    moves.add(new ChessMove(myPosition, pos1, type));
+                    moves.add(new ChessMove(myPosition, pos1, null));
                 }
                 else {
                     moves.add(new ChessMove(myPosition, pos1, PieceType.QUEEN));
@@ -172,7 +172,7 @@ public class ChessPiece {
                     moves.add(new ChessMove(myPosition, pos1, PieceType.KNIGHT));
                 }
                 if (myPosition.getRow() == start && isClear(board, pos2.getRow(), pos2.getColumn())) { // check 2 space ahead, if @start
-                    moves.add(new ChessMove(myPosition, pos2, type));
+                    moves.add(new ChessMove(myPosition, pos2, null));
                 }
             }
             // capture moves
@@ -182,7 +182,7 @@ public class ChessPiece {
                 if (board.getPiece(pos) != null
                         && board.getPiece(pos).pieceColor != pieceColor) {
                     if (pos.getRow() != promote) {
-                        moves.add(new ChessMove(myPosition, pos, type));
+                        moves.add(new ChessMove(myPosition, pos, null));
                     }
                     else {
                         moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
@@ -198,7 +198,7 @@ public class ChessPiece {
                 if (board.getPiece(pos) != null
                         && board.getPiece(pos).pieceColor != pieceColor) {
                     if (pos.getRow() != promote) {
-                        moves.add(new ChessMove(myPosition, pos, type));
+                        moves.add(new ChessMove(myPosition, pos, null));
                     }
                     else {
                         moves.add(new ChessMove(myPosition, pos, PieceType.QUEEN));
@@ -238,7 +238,7 @@ public class ChessPiece {
             }
             // add all possible moves in positions list
             for (ChessPosition pos : positions) {
-                moves.add(new ChessMove(myPosition, pos, type));
+                moves.add(new ChessMove(myPosition, pos, null));
             }
         }
         // ROOK and QUEEN
@@ -251,11 +251,11 @@ public class ChessPiece {
                 // right moves
                 if (inBounds(myPosition.getRow(), myPosition.getColumn() + i) && right_clear) {
                     if (isClear(board, myPosition.getRow(), myPosition.getColumn() + i)) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), type));
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), null));
                     }
                     else {
                         if (!friendlyFire(board, myPosition.getRow(), myPosition.getColumn() + i)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), null));
                         }
                         right_clear = false;
                     }
@@ -263,11 +263,11 @@ public class ChessPiece {
                 // left moves
                 if (inBounds(myPosition.getRow(), myPosition.getColumn() - i) && left_clear) {
                     if (isClear(board, myPosition.getRow(), myPosition.getColumn() - i)) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), type));
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), null));
                     }
                     else {
                         if (!friendlyFire(board, myPosition.getRow(), myPosition.getColumn() - i)) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), null));
                         }
                         left_clear = false;
                     }
@@ -275,11 +275,11 @@ public class ChessPiece {
                 // up moves
                 if (inBounds(myPosition.getRow() + i, myPosition.getColumn()) && up_clear) {
                     if (isClear(board, myPosition.getRow() + i, myPosition.getColumn())) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), type));
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
                     }
                     else {
                         if (!friendlyFire(board, myPosition.getRow() + i, myPosition.getColumn())) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
                         }
                         up_clear = false;
                     }
@@ -287,11 +287,11 @@ public class ChessPiece {
                 // down moves
                 if (inBounds(myPosition.getRow() - i, myPosition.getColumn()) && down_clear) {
                     if (isClear(board, myPosition.getRow() - i, myPosition.getColumn())) {
-                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), type));
+                        moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
                     }
                     else {
                         if (!friendlyFire(board, myPosition.getRow() - i, myPosition.getColumn())) {
-                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), type));
+                            moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
                         }
                         down_clear = false;
                     }
@@ -303,42 +303,42 @@ public class ChessPiece {
             // down left
             if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() - 1)
                     && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn() - 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1), null));
             }
             // left
             if (inBounds(myPosition.getRow(), myPosition.getColumn() - 1)
                     && !friendlyFire(board, myPosition.getRow(), myPosition.getColumn() - 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - 1), null));
             }
             // up left
             if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() - 1)
                     && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn() - 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1), null));
             }
             // up
             if (inBounds(myPosition.getRow() + 1, myPosition.getColumn())
                     && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn())) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn()), null));
             }
             // up right
             if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() + 1)
                     && !friendlyFire(board, myPosition.getRow() + 1, myPosition.getColumn() + 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1), null));
             }
             // right
             if (inBounds(myPosition.getRow(), myPosition.getColumn() + 1)
                     && !friendlyFire(board, myPosition.getRow(), myPosition.getColumn() + 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + 1), null));
             }
             // down right
             if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() + 1)
                     && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn() + 1)) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1), null));
             }
             // down
             if (inBounds(myPosition.getRow() - 1, myPosition.getColumn())
                     && !friendlyFire(board, myPosition.getRow() - 1, myPosition.getColumn())) {
-                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), type));
+                moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn()), null));
             }
         }
         return moves;

@@ -202,28 +202,36 @@ public class ChessPiece {
 
     private void getKnightMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> moves) {
         List<ChessPosition> positions = new ArrayList<ChessPosition>();
-        if (inBounds(myPosition.getRow() + 2, myPosition.getColumn() + 1) && enemy(board, myPosition.getRow() + 2, myPosition.getColumn() + 1)) { // up right
+        if (inBounds(myPosition.getRow() + 2, myPosition.getColumn() + 1) &&
+                enemy(board, myPosition.getRow() + 2, myPosition.getColumn() + 1)) { // up right
             positions.add(new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() + 1));
         }
-        if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() + 2) && enemy(board, myPosition.getRow() + 1, myPosition.getColumn() + 2)) { // right up
+        if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() + 2) &&
+                enemy(board, myPosition.getRow() + 1, myPosition.getColumn() + 2)) { // right up
             positions.add(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 2));
         }
-        if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() + 2) && enemy(board, myPosition.getRow() - 1, myPosition.getColumn() + 2)) { // right down
+        if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() + 2) &&
+                enemy(board, myPosition.getRow() - 1, myPosition.getColumn() + 2)) { // right down
             positions.add(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 2));
         }
-        if (inBounds(myPosition.getRow() - 2, myPosition.getColumn() + 1) && enemy(board, myPosition.getRow() - 2, myPosition.getColumn() + 1)) { // down right
+        if (inBounds(myPosition.getRow() - 2, myPosition.getColumn() + 1) &&
+                enemy(board, myPosition.getRow() - 2, myPosition.getColumn() + 1)) { // down right
             positions.add(new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() + 1));
         }
-        if (inBounds(myPosition.getRow() - 2, myPosition.getColumn() - 1) && enemy(board, myPosition.getRow() - 2, myPosition.getColumn() - 1)) { // down left
+        if (inBounds(myPosition.getRow() - 2, myPosition.getColumn() - 1) &&
+                enemy(board, myPosition.getRow() - 2, myPosition.getColumn() - 1)) { // down left
             positions.add(new ChessPosition(myPosition.getRow() - 2, myPosition.getColumn() - 1));
         }
-        if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() - 2) && enemy(board, myPosition.getRow() - 1, myPosition.getColumn() - 2)) { // left down
+        if (inBounds(myPosition.getRow() - 1, myPosition.getColumn() - 2) &&
+                enemy(board, myPosition.getRow() - 1, myPosition.getColumn() - 2)) { // left down
             positions.add(new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 2));
         }
-        if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() - 2) && enemy(board, myPosition.getRow() + 1, myPosition.getColumn() - 2)) { // left up
+        if (inBounds(myPosition.getRow() + 1, myPosition.getColumn() - 2) &&
+                enemy(board, myPosition.getRow() + 1, myPosition.getColumn() - 2)) { // left up
             positions.add(new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 2));
         }
-        if (inBounds(myPosition.getRow() + 2, myPosition.getColumn() - 1) && enemy(board, myPosition.getRow() + 2, myPosition.getColumn() - 1)) { // up left
+        if (inBounds(myPosition.getRow() + 2, myPosition.getColumn() - 1) &&
+                enemy(board, myPosition.getRow() + 2, myPosition.getColumn() - 1)) { // up left
             positions.add(new ChessPosition(myPosition.getRow() + 2, myPosition.getColumn() - 1));
         }
         // add all possible moves in positions list
@@ -355,13 +363,17 @@ public class ChessPiece {
     private boolean isClear(ChessBoard board, int newRow, int newCol) {
         return board.getPiece(new ChessPosition(newRow, newCol)) == null;
     }
+
     private boolean inBounds(int newRow, int newCol) {
         return newRow >= 1 && newRow < 9 && newCol >= 1 && newCol < 9;
     }
+
     private boolean enemy(ChessBoard board, int row, int col) {
         if (board.getPiece(new ChessPosition(row,col)) != null) {
             return board.getPiece(new ChessPosition(row, col)).getTeamColor() != pieceColor;
         }
-        else return true;
+        else {
+            return true;
+        }
     }
 }

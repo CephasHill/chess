@@ -79,20 +79,20 @@ public class ChessPiece {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // BISHOP and QUEEN
         if (type == PieceType.BISHOP || type == PieceType.QUEEN) {
-            boolean up_right_clear = true;
-            boolean down_left_clear = true;
-            boolean up_left_clear = true;
-            boolean down_right_clear = true;
+            boolean upRightClear = true;
+            boolean downLeftClear = true;
+            boolean upLeftClear = true;
+            boolean downRightClear = true;
             for (int i = 1; i < 8; i++) {
                 // up-right
                 int newRow = 0;
                 int newCol = 0;
-                if (up_right_clear) {
+                if (upRightClear) {
                     newRow = myPosition.getRow() + i;
                     newCol = myPosition.getColumn() + i;
                     if (inBounds(newRow,newCol)) {
-                        up_right_clear = isClear(board, newRow, newCol);
-                        if (up_right_clear) {
+                        upRightClear = isClear(board, newRow, newCol);
+                        if (upRightClear) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
@@ -102,12 +102,12 @@ public class ChessPiece {
                     }
                 }
                 // down-left
-                if (down_left_clear) {
+                if (downLeftClear) {
                     newRow = myPosition.getRow() - i;
                     newCol = myPosition.getColumn() - i;
                     if (inBounds(newRow,newCol)) {
-                        down_left_clear = isClear(board, newRow, newCol);
-                        if (down_left_clear) {
+                        downLeftClear = isClear(board, newRow, newCol);
+                        if (downLeftClear) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
@@ -117,12 +117,12 @@ public class ChessPiece {
                     }
                 }
                 // up-left
-                if (up_left_clear) {
+                if (upLeftClear) {
                     newRow = myPosition.getRow() + i;
                     newCol = myPosition.getColumn() - i;
                     if (inBounds(newRow,newCol)) {
-                        up_left_clear = isClear(board, newRow, newCol);
-                        if (up_left_clear) {
+                        upLeftClear = isClear(board, newRow, newCol);
+                        if (upLeftClear) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
@@ -132,12 +132,12 @@ public class ChessPiece {
                     }
                 }
                 // down-right
-                if (down_right_clear) {
+                if (downRightClear) {
                     newRow = myPosition.getRow() - i;
                     newCol = myPosition.getColumn() + i;
                     if (inBounds(newRow,newCol)) {
-                        down_right_clear = isClear(board, newRow, newCol);
-                        if (down_right_clear) {
+                        downRightClear = isClear(board, newRow, newCol);
+                        if (downRightClear) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(newRow, newCol), null));
                         }
                         else if (board.getPiece(new ChessPosition(newRow, newCol)) != null &&
@@ -219,13 +219,13 @@ public class ChessPiece {
         }
         // ROOK and QUEEN
         if (type == PieceType.ROOK || type == PieceType.QUEEN) {
-            boolean up_clear = true;
-            boolean down_clear = true;
-            boolean left_clear = true;
-            boolean right_clear = true;
+            boolean upClear = true;
+            boolean downClear = true;
+            boolean leftClear = true;
+            boolean rightClear = true;
             for (int i = 1 ; i <= 8 ; i++) {
                 // right moves
-                if (inBounds(myPosition.getRow(), myPosition.getColumn() + i) && right_clear) {
+                if (inBounds(myPosition.getRow(), myPosition.getColumn() + i) && rightClear) {
                     if (isClear(board, myPosition.getRow(), myPosition.getColumn() + i)) {
                         moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), null));
                     }
@@ -233,11 +233,11 @@ public class ChessPiece {
                         if (enemy(board, myPosition.getRow(), myPosition.getColumn() + i)) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i), null));
                         }
-                        right_clear = false;
+                        rightClear = false;
                     }
                 }
                 // left moves
-                if (inBounds(myPosition.getRow(), myPosition.getColumn() - i) && left_clear) {
+                if (inBounds(myPosition.getRow(), myPosition.getColumn() - i) && leftClear) {
                     if (isClear(board, myPosition.getRow(), myPosition.getColumn() - i)) {
                         moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), null));
                     }
@@ -245,11 +245,11 @@ public class ChessPiece {
                         if (enemy(board, myPosition.getRow(), myPosition.getColumn() - i)) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i), null));
                         }
-                        left_clear = false;
+                        leftClear = false;
                     }
                 }
                 // up moves
-                if (inBounds(myPosition.getRow() + i, myPosition.getColumn()) && up_clear) {
+                if (inBounds(myPosition.getRow() + i, myPosition.getColumn()) && upClear) {
                     if (isClear(board, myPosition.getRow() + i, myPosition.getColumn())) {
                         moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
                     }
@@ -257,11 +257,11 @@ public class ChessPiece {
                         if (enemy(board, myPosition.getRow() + i, myPosition.getColumn())) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()), null));
                         }
-                        up_clear = false;
+                        upClear = false;
                     }
                 }
                 // down moves
-                if (inBounds(myPosition.getRow() - i, myPosition.getColumn()) && down_clear) {
+                if (inBounds(myPosition.getRow() - i, myPosition.getColumn()) && downClear) {
                     if (isClear(board, myPosition.getRow() - i, myPosition.getColumn())) {
                         moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
                     }
@@ -269,7 +269,7 @@ public class ChessPiece {
                         if (enemy(board, myPosition.getRow() - i, myPosition.getColumn())) {
                             moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()), null));
                         }
-                        down_clear = false;
+                        downClear = false;
                     }
                 }
             }

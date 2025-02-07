@@ -76,6 +76,21 @@ public class ChessBoard {
         squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
     }
 
+    public ChessBoard copy() {
+        ChessBoard newBoard = new ChessBoard();
+        for (int row = 0; row < 8; row++) {
+            for (int column = 0; column < 8; column++) {
+                ChessPosition position = new ChessPosition(row, column);
+                ChessPiece piece = this.getPiece(position);
+
+                if (piece != null) {
+                    newBoard.addPiece(position, piece.copy());
+                }
+            }
+        }
+        return newBoard;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) {

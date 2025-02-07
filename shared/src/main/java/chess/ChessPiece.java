@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -68,6 +69,10 @@ public class ChessPiece {
         return this.type;
     }
 
+    public ChessPiece copy() {
+        return new ChessPiece(this.getTeamColor(), this.getPieceType());
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -75,7 +80,7 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // BISHOP and QUEEN
         if (type == PieceType.BISHOP || type == PieceType.QUEEN) {

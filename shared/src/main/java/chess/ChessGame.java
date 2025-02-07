@@ -50,6 +50,9 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        if (gameBoard.getPiece(startPosition) == null) {
+            return null;
+        }
         Collection<ChessMove> moves = new ArrayList<>(gameBoard.getPiece(startPosition).pieceMoves(gameBoard, startPosition));
         Iterator<ChessMove> iterator = moves.iterator();
 
@@ -85,8 +88,22 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
-        gameBoard.addPiece(move.getStartPosition(), null);
+        if (validMoves(move.getStartPosition()) == null) {
+            throw new InvalidMoveException();
+        }
+        if (!validMoves(move.getStartPosition()).contains(move)
+                || gameBoard.getPiece(move.getStartPosition()) == null
+                || gameBoard.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()) {
+            throw new InvalidMoveException();
+        }
+        if (gameBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
+            gameBoard.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
+            gameBoard.addPiece(move.getStartPosition(), null);
+        }
+        else {
+            gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
+            gameBoard.addPiece(move.getStartPosition(), null);
+        }
         if (getTeamTurn() == TeamColor.BLACK) {
             setTeamTurn(TeamColor.WHITE);
         }

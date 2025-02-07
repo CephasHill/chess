@@ -13,7 +13,7 @@ public class ChessBoard {
     private final ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
-        
+
     }
 
     /**
@@ -23,7 +23,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()-1][position.getColumn()-1] = piece;
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -34,7 +34,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()-1][position.getColumn()-1];
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -108,51 +108,38 @@ public class ChessBoard {
     @Override
     public String toString() {
         StringBuilder boardString = new StringBuilder();
-        boardString.append("  a b c d e f g h\n"); // Column labels
 
-        for (int row = 0; row < 8; row++) {
-            boardString.append(8 - row).append(" "); // Row labels (8-1 at the side)
-            for (int col = 0; col < 8; col++) {
-                ChessPiece piece = squares[row][col];
+        for (int row = 8; row >= 1; row--) { // Iterate from top to bottom
+            boardString.append("|");
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = getPiece(new ChessPosition(row, col));
                 if (piece == null) {
-                    boardString.append(". "); // Empty squares represented as dots
+                    boardString.append(" ");
                 } else {
-                    String pieceSymbol = getPieceSymbol(piece);
-                    boardString.append(pieceSymbol).append(" ");
+                    char pieceChar = getPieceChar(piece);
+                    boardString.append(pieceChar);
                 }
+                boardString.append("|");
             }
-            boardString.append(8 - row).append("\n"); // Row labels on the other side
+            boardString.append("\n"); // New line after each row
         }
-        boardString.append("  a b c d e f g h"); // Bottom column labels
 
         return boardString.toString();
     }
 
-    private String getPieceSymbol(ChessPiece piece) {
-        String symbol;
-        switch (piece.getPieceType()) {
-            case PAWN:
-                symbol = "P";
-                break;
-            case ROOK:
-                symbol = "R";
-                break;
-            case KNIGHT:
-                symbol = "N";
-                break;
-            case BISHOP:
-                symbol = "B";
-                break;
-            case QUEEN:
-                symbol = "Q";
-                break;
-            case KING:
-                symbol = "K";
-                break;
-            default:
-                symbol = "?";
-        }
-        // Use lowercase for black pieces and uppercase for white pieces
-        return piece.getTeamColor() == ChessGame.TeamColor.BLACK ? symbol.toLowerCase() : symbol.toUpperCase();
+
+    private char getPieceChar(ChessPiece piece) {
+        char symbol = switch (piece.getPieceType()) {
+            case KING -> 'K';
+            case QUEEN -> 'Q';
+            case ROOK -> 'R';
+            case BISHOP -> 'B';
+            case KNIGHT -> 'N';
+            case PAWN -> 'P';
+            default -> '?'; // Just in case
+        };
+
+        return (piece.getTeamColor() == ChessGame.TeamColor.BLACK) ? Character.toLowerCase(symbol) : symbol;
     }
 }
+

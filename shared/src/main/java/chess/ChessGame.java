@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -32,6 +33,20 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return teamTurn == chessGame.teamTurn && Objects.equals(gameBoard, chessGame.gameBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(teamTurn, gameBoard);
     }
 
     /**
@@ -96,8 +111,11 @@ public class ChessGame {
                 || gameBoard.getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()) {
             throw new InvalidMoveException();
         }
-        if (gameBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN) {
-            gameBoard.addPiece(move.getEndPosition(), new ChessPiece(getTeamTurn(), move.getPromotionPiece()));
+        if (gameBoard.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN
+                && (move.getEndPosition().getRow() == 1 || move.getEndPosition().getRow() == 8)) {
+            ChessPosition endPos = move.getEndPosition();
+            ChessPiece piece = new ChessPiece(getTeamTurn(),move.getPromotionPiece());
+            gameBoard.addPiece(endPos, piece);
             gameBoard.addPiece(move.getStartPosition(), null);
         }
         else {

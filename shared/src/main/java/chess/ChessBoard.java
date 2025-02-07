@@ -78,8 +78,8 @@ public class ChessBoard {
 
     public ChessBoard copy() {
         ChessBoard newBoard = new ChessBoard();
-        for (int row = 0; row < 8; row++) {
-            for (int column = 0; column < 8; column++) {
+        for (int row = 1; row <= 8; row++) {
+            for (int column = 1; column <= 8; column++) {
                 ChessPosition position = new ChessPosition(row, column);
                 ChessPiece piece = this.getPiece(position);
 

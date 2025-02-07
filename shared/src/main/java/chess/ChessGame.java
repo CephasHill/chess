@@ -74,22 +74,22 @@ public class ChessGame {
         while (iterator.hasNext()) {
             ChessMove move = iterator.next();
 
-            // Temporarily store original state
             ChessPiece movedPiece = gameBoard.getPiece(move.getStartPosition());
             ChessPiece capturedPiece = gameBoard.getPiece(move.getEndPosition());
+
+            ChessBoard originalBoard = gameBoard.copy();
 
             // Apply the move
             gameBoard.addPiece(move.getEndPosition(), movedPiece);
             gameBoard.addPiece(move.getStartPosition(), null);
 
             // Check if the move leaves the king in check
-            if (isInCheck(getTeamTurn())) {
+            if (isInCheck(movedPiece.getTeamColor())) {
                 iterator.remove(); // Safe removal using iterator
             }
 
             // Restore original board state
-            gameBoard.addPiece(move.getStartPosition(), movedPiece);
-            gameBoard.addPiece(move.getEndPosition(), capturedPiece);
+            gameBoard = originalBoard.copy();
         }
 
         return moves;

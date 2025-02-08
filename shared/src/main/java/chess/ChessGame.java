@@ -16,10 +16,23 @@ public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard gameBoard;
 
+    private boolean blackKingMoved;
+    private boolean whiteKingMoved;
+    private boolean blackQueenSideRookMoved;
+    private boolean whiteQueenSideRookMoved;
+    private boolean blackKingSideRookMoved;
+    private boolean whiteKingSideRookMoved;
+
     public ChessGame() {
         gameBoard = new ChessBoard();
         gameBoard.resetBoard();
         teamTurn = TeamColor.WHITE;
+        blackKingMoved = false;
+        whiteKingMoved = false;
+        blackQueenSideRookMoved = false;
+        whiteQueenSideRookMoved = false;
+        blackKingSideRookMoved = false;
+        whiteKingSideRookMoved = false;
     }
 
     /**
@@ -95,6 +108,71 @@ public class ChessGame {
             gameBoard = originalBoard.copy();
         }
 
+//        // Castling
+//        ChessPiece piece = gameBoard.getPiece(startPosition);
+//
+//        // White king
+//        if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == TeamColor.WHITE) {
+//            if (!whiteKingMoved && !whiteQueenSideRookMoved) {
+//                boolean space = true;
+//                int startRow = 1;
+//                for (int i = 1; i <= 3; i++) {
+//                    ChessPosition position = new ChessPosition(startRow, startPosition.getColumn() - i);
+//                    if (gameBoard.getPiece(position) != null) {
+//                        space = false;
+//                    }
+//                }
+//                if (space) {
+//                    moves.add(new ChessMove(startPosition, new ChessPosition(startRow, startPosition.getColumn() - 3), null));
+//                }
+//            }
+//            if (!whiteKingMoved && !whiteKingSideRookMoved) {
+//                boolean space = true;
+//                int startRow = 1;
+//                for (int i = 1; i <= 2; i++) {
+//                    ChessPosition position = new ChessPosition(startRow, startPosition.getColumn() + i);
+//                    if (gameBoard.getPiece(position) != null) {
+//                        space = false;
+//                    }
+//                }
+//                if (space) {
+//                    moves.add(new ChessMove(startPosition, new ChessPosition(startRow, startPosition.getColumn() + 2), null));
+//                }
+//            }
+//        }
+//        // White queen-side rook
+//        if (piece.getPieceType() == ChessPiece.PieceType.ROOK && piece.getTeamColor() == TeamColor.WHITE && startPosition.getColumn() == 1) {
+//            if (!whiteKingMoved && !whiteQueenSideRookMoved) {
+//                boolean space = true;
+//                int startRow = 1;
+//                for (int i = 1; i <= 3; i++) {
+//                    ChessPosition position = new ChessPosition(startRow, startPosition.getColumn() + i);
+//                    if (gameBoard.getPiece(position) != null) {
+//                        space = false;
+//                    }
+//                }
+//                if (space) {
+//                    moves.add(new ChessMove(startPosition, new ChessPosition(startRow, startPosition.getColumn() + 2), null));
+//                }
+//            }
+//        }
+//        // White king-side rook
+//        if (piece.getPieceType() == ChessPiece.PieceType.ROOK && piece.getTeamColor() == TeamColor.WHITE && startPosition.getColumn() == 8) {
+//            if (!whiteKingMoved && !whiteKingSideRookMoved) {
+//                boolean space = true;
+//                int startRow = 1;
+//                for (int i = 1; i <= 2; i++) {
+//                    ChessPosition position = new ChessPosition(startRow, startPosition.getColumn() - i);
+//                    if (gameBoard.getPiece(position) != null) {
+//                        space = false;
+//                    }
+//                }
+//                if (space) {
+//                    moves.add(new ChessMove(startPosition, new ChessPosition(startRow, startPosition.getColumn() - 2), null));
+//                }
+//            }
+//        }
+
         return moves;
     }
 
@@ -125,6 +203,37 @@ public class ChessGame {
             gameBoard.addPiece(move.getEndPosition(), gameBoard.getPiece(move.getStartPosition()));
             gameBoard.addPiece(move.getStartPosition(), null);
         }
+
+//        // Castling checks
+//        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+//        if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+//            if (piece.getTeamColor() == TeamColor.BLACK) {
+//                blackKingMoved = true;
+//            }
+//            else {
+//                whiteKingMoved = true;
+//            }
+//        }
+//        if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+//            if (piece.getTeamColor() == TeamColor.BLACK) {
+//                if (move.getStartPosition().getColumn() == 1) {
+//                    blackQueenSideRookMoved = true;
+//                }
+//                else if (move.getStartPosition().getColumn() == 8) {
+//                    blackKingSideRookMoved = true;
+//                }
+//            }
+//            else {
+//                if (move.getStartPosition().getColumn() == 1) {
+//                    whiteQueenSideRookMoved = true;
+//                }
+//                else if (move.getStartPosition().getColumn() == 8) {
+//                    whiteKingSideRookMoved = true;
+//                }
+//            }
+//        }
+
+        // Change turn
         if (getTeamTurn() == TeamColor.BLACK) {
             setTeamTurn(TeamColor.WHITE);
         }

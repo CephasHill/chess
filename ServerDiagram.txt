@@ -1,0 +1,116 @@
+actor Client
+participant Server
+participant Handler
+participant Service
+participant DataAccess
+database db
+
+entryspacing 0.9
+group #navy Registration #white
+Client -> Server: [POST] /user\n{"username":" ", "password":" ", "email":" "}
+Server -> Handler: {"username":" ", "password":" ", "email":" "}
+Handler -> Service: register(RegisterRequest)
+Service -> DataAccess: getUser(username)
+DataAccess -> db:Find UserData by username
+DataAccess --> Service: null
+Service -> DataAccess:createUser(userData)
+DataAccess -> db:Add UserData
+Service -> DataAccess:createAuth(authData)
+DataAccess -> db:Add AuthData
+Service --> Handler: RegisterResult
+Handler --> Server: {"username" : " ", "authToken" : " "}
+Server --> Client: 200\n{"username" : " ", "authToken" : " "}
+end
+
+group #orange Login #white
+#success
+Client -> Server: [POST] /session\n{username, password}
+Server->Handler:{"username":"","password":""}
+Handler->Service:login(LoginRequest)
+Service->DataAccess:getUser(username)
+DataAccess->db:Find UserData by username
+Service<--DataAccess:userData
+Service->DataAccess:createAuth(authData)
+DataAccess->db:Add AuthData
+Service<--DataAccess:authToken
+Handler<--Service:LoginResult
+Server<--Handler:{"username":"","authToken":""}
+Client<--Server:200\n{"username":"","authToken":""}
+#no user match
+Service<--DataAccess:null
+Handler<--Service:Error
+Server<--Handler:Error
+Client<--Server:401\n{"message":"Error: unauthorized"}
+#password mismatch
+Service<--DataAccess:password doesn't match username
+Handler<--Service:Error
+Server<--Handler:Error
+Client<--Server:401\n{"message":"Error: unathorized"}
+end
+
+group #green Logout #white
+Client -> Server: [DELETE] /session\nauthToken
+Server->Handler:{"authToken":""}
+Handler->Service:logout(LogoutRequest)
+Service->DataAccess:logout(authToken)
+DataAccess->db:Delete authToken
+Handler<--Service:LogoutResult
+Server<--Handler:{}
+Client<--Server:200\n{}
+end
+
+group #red List Games #white
+Client -> Server: [GET] /game\nauthToken
+Server->Handler:{"authToken:"}
+Handler->Service:listGames(ListGamesRequest)
+Service->DataAccess:getAuthorized(authToken)
+DataAccess->db:Authorize
+Service->DataAccess:listGames(authToken)
+DataAccess->db:Get list of all games
+Service<--DataAccess:gamesList
+Handler<--Service:ListGamesResult
+Server<--Handler:{ "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:""} ]}
+Client<--Server:200\n{ "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:""} ]}
+end
+
+group #purple Create Game #white
+Client -> Server: [POST] /game\nauthToken\n{gameName}
+Server->Handler:{"authToken":"","gameName":""}
+Handler->Service:createGame(CreateGameRequest)
+Service->DataAccess:getAuthorized(authToken)
+DataAccess->db:Authorize
+Service->DataAccess:createGame(gameName)
+DataAccess->db:Add GameData
+Service<--DataAccess:gameData
+Handler<--Service:CreateGameResult
+Server<--Handler:{"gameID":""}
+Client<--Server:200\n{"gameID":""}
+end
+
+group #yellow Join Game #black
+Client -> Server: [PUT] /game\nauthToken\n{playerColor, gameID}
+Server->Handler:{"authToken":"","playerColor":"","gameID":""}
+Handler->Service:joinGame(JoinGameRequest)
+Service->DataAccess:getAuthorized(authToken)
+DataAccess->db:Authorize
+Service->DataAccess:joinGame(gameID)
+DataAccess->db:check that color not taken
+Service<--DataAccess:null
+Handler<--Service:JoinGameResult
+Server<--Handler:{}
+Client<--Server:200\n{}
+Service<--DataAccess:Error: color taken
+Handler<--Service:etc.
+end
+
+group #gray Clear application #white
+Client -> Server: [DELETE] /db
+Server->Handler:{}
+Handler->Service:deleteDB(DeleteRequest)
+Service->DataAccess:deleteDB()
+DataAccess->db:Delete database
+Service<--DataAccess:null
+Handler<--Service:DeleteResult
+Server<--Handler:{}
+Client<--Server:200\n{}
+end

@@ -1,4 +1,6 @@
 package result;
 
-public record RegisterResult() {
+import model.UserData;
+
+public record RegisterResult(UserData userData) {
 }

@@ -2,9 +2,13 @@ package dataaccess;
 
 import model.AuthData;
 
-public class AuthDataDAO {
-    void createAuth(AuthData a) throws DataAccessException {
+import java.util.HashMap;
+import java.util.UUID;
 
+public class AuthDataDAO {
+    private HashMap<String, String> authMap;
+    void createAuth(AuthData a) throws DataAccessException {
+        authMap.put(a.authToken(),a.username());
     }
     void getAuth(AuthData a) throws DataAccessException {
 

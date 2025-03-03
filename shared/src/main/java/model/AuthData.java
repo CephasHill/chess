@@ -1,4 +1,4 @@
 package model;
 
-public record AuthData(String username, String password, String email) {
+public record AuthData(String authToken, String username) {
 }

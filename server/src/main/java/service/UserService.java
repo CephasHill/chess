@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.Database;
 import dataaccess.UserDataDAO;
 import model.AuthData;
 import model.UserData;
@@ -9,6 +8,7 @@ import request.LoginRequest;
 import request.LogoutRequest;
 import request.RegisterRequest;
 import result.LoginResult;
+import result.LogoutResult;
 import result.RegisterResult;
 
 import java.util.UUID;
@@ -16,22 +16,25 @@ import java.util.UUID;
 public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        AuthData authData = new AuthData(registerRequest.username(), authToken);
         UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         UserDataDAO dao = new UserDataDAO();
         try {
-            dao.getUser(userData);
+            dao.getUser(registerRequest.username());
         }
         catch (DataAccessException e) {
-            dao.createUser(userData, authData);
+            AuthData authData = dao.createUser(userData);
             return new RegisterResult(authData);
         }
         throw new DataAccessException("Username already exists");
     }
-    public LoginResult login(LoginRequest loginRequest) {
-        return null;
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        UserDataDAO dao = new UserDataDAO();
+        AuthData a = dao.loginUser(loginRequest.username(), loginRequest.password());
+        return new LoginResult(a.username(),a.authToken());
     }
-    void logout(LogoutRequest logoutRequest) {
-
+    public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
+        UserDataDAO dao = new UserDataDAO();
+        dao.logout(logoutRequest.authToken());
+        return new LogoutResult();
     }
 }

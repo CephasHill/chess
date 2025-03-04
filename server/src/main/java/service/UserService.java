@@ -3,6 +3,7 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.Database;
 import dataaccess.UserDataDAO;
+import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
 import request.LogoutRequest;
@@ -13,14 +14,19 @@ import result.RegisterResult;
 import java.util.UUID;
 
 public class UserService {
-    public RegisterResult register(RegisterRequest registerRequest) {
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        UserData userData = new UserData(authToken, registerRequest.username());
-        return new RegisterResult(userData);
-    }
-    void getUser(UserData userData) throws DataAccessException {
+        AuthData authData = new AuthData(registerRequest.username(), authToken);
+        UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         UserDataDAO dao = new UserDataDAO();
-        dao.getUser(userData);
+        try {
+            dao.getUser(userData);
+        }
+        catch (DataAccessException e) {
+            dao.createUser(userData, authData);
+            return new RegisterResult(authData);
+        }
+        throw new DataAccessException("Username already exists");
     }
     public LoginResult login(LoginRequest loginRequest) {
         return null;

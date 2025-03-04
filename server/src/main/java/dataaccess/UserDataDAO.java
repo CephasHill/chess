@@ -1,20 +1,20 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
-
-import java.util.HashMap;
 
 import static server.Server.database;
 
 public class UserDataDAO {
 
-    public void createUser(UserData u) throws DataAccessException {
-        database.userMap.put(u.authToken(),u.username());
+    public void createUser(UserData u, AuthData a) throws DataAccessException {
+        Pair<String, String> pair = new Pair<>(u.password(), u.email());
+        database.userMap.put(u.username(), pair);
+        database.authMap.put(a.authToken(),a.username());
     }
     public void getUser(UserData u) throws DataAccessException {
-        database.userMap.get(u.authToken());
-    }
-    public void clear() throws DataAccessException {
-        database.userMap.clear();
+        if (!database.userMap.containsKey(u.username())) {
+            throw new DataAccessException("Error: User not found");
+        }
     }
 }

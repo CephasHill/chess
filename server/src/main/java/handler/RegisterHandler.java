@@ -1,15 +1,19 @@
 package handler;
 
-import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import request.RegisterRequest;
 import result.RegisterResult;
 import service.UserService;
 
 public class RegisterHandler {
-    public RegisterResult register(String json) {
-        var serializer = new Gson();
-        RegisterRequest request = serializer.fromJson(json, RegisterRequest.class);
+    public RegisterResult register(String username, String password, String email) throws DataAccessException {
+
         UserService userService = new UserService();
-        return userService.register(request);
+        try {
+            return userService.register(new RegisterRequest(username, password, email));
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 }

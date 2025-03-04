@@ -1,6 +1,6 @@
 package result;
 
-import model.UserData;
+import model.AuthData;
 
-public record RegisterResult(UserData userData) {
+public record RegisterResult(AuthData authData) {
 }

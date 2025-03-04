@@ -1,10 +1,11 @@
 package service;
 
+import dataaccess.ClearDataDAO;
 import request.DeleteRequest;
-import result.DeleteResult;
 
 public class ClearService {
-    public DeleteResult clear(DeleteRequest request) {
-        return null;
+    public void clearAll(DeleteRequest request) {
+        ClearDataDAO dao = new ClearDataDAO();
+        dao.clearData();
     }
 }

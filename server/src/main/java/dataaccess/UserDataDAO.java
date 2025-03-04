@@ -4,20 +4,17 @@ import model.UserData;
 
 import java.util.HashMap;
 
+import static server.Server.database;
+
 public class UserDataDAO {
-    private final HashMap<String, String> userMap;
 
-    public UserDataDAO(HashMap<String, String> userMap) {
-        this.userMap = userMap;
+    public void createUser(UserData u) throws DataAccessException {
+        database.userMap.put(u.authToken(),u.username());
     }
-
-    void createUser(UserData u) throws DataAccessException {
-        userMap.put(u.authToken(),u.username());
+    public void getUser(UserData u) throws DataAccessException {
+        database.userMap.get(u.authToken());
     }
-    void getUser(UserData u) throws DataAccessException {
-        userMap.get(u.authToken());
-    }
-    void clear() throws DataAccessException {
-        userMap.clear();
+    public void clear() throws DataAccessException {
+        database.userMap.clear();
     }
 }

@@ -1,28 +1,39 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 
-import java.util.HashMap;
+import java.util.Random;
+import java.util.UUID;
+
+import static server.Server.database;
 
 public class GameDataDAO {
-    private final HashMap<Integer, GameData> gameMap;
 
-    public GameDataDAO(HashMap<Integer, GameData> gameMap) {
-        this.gameMap = gameMap;
-    }
-
-    void createGame(GameData g) throws DataAccessException {
-        gameMap.put(g.gameID(),g);
+    public GameData createGame(String gameName, String authToken) throws DataAccessException {
+        authorize(authToken);
+        int id = generateID();
+        ChessGame game = new ChessGame();
+        return new GameData(id, null, null, gameName, game);
     }
     void getGame(GameData g) throws DataAccessException {
-        gameMap.get(g.gameID());
+
     }
     void listGames(GameData g) throws DataAccessException {
     }
     void updateGame(GameData g) throws DataAccessException {
-        gameMap.put(g.gameID(), g);
+
     }
     void clear() throws DataAccessException {
-        gameMap.clear();
+
+    }
+    private int generateID() {
+        Random random = new Random();
+        return 1000 + random.nextInt(9000);
+    }
+    void authorize(String authToken) throws DataAccessException {
+        if (!database.authMap.containsValue(authToken)) {
+            throw new DataAccessException("Error: Unauthorized");
+        }
     }
 }

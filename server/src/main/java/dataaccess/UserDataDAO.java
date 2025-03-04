@@ -30,7 +30,7 @@ public class UserDataDAO {
             return new AuthData(username,auth);
         }
         else {
-            throw new DataAccessException("Wrong password");
+            throw new DataAccessException("Error: Wrong password");
         }
     }
 
@@ -48,6 +48,7 @@ public class UserDataDAO {
         if (!database.authMap.containsValue(authToken)) {
             throw new DataAccessException("Error: AuthToken not found");
         }
-        database.authMap.remove(authToken);
+        String key = database.getKeyByValue(database.authMap, authToken);
+        database.authMap.remove(key);
     }
 }

@@ -25,7 +25,7 @@ public class UserService {
             AuthData authData = dao.createUser(userData);
             return new RegisterResult(authData);
         }
-        throw new DataAccessException("Username already exists");
+        throw new DataAccessException("Error: Username already exists");
     }
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
         UserDataDAO dao = new UserDataDAO();
@@ -34,7 +34,12 @@ public class UserService {
     }
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
         UserDataDAO dao = new UserDataDAO();
-        dao.logout(logoutRequest.authToken());
+        try {
+            dao.logout(logoutRequest.authToken());
+        }
+        catch (DataAccessException e) {
+            throw new DataAccessException("Error: Invalid auth token");
+        }
         return new LogoutResult();
     }
 }

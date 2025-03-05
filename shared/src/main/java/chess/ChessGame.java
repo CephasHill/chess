@@ -141,7 +141,9 @@ public class ChessGame {
         if (getTeamTurn() == TeamColor.BLACK) {
             setTeamTurn(TeamColor.WHITE);
         }
-        else setTeamTurn(TeamColor.BLACK);
+        else {
+            setTeamTurn(TeamColor.BLACK);
+        }
     }
 
     /**
@@ -159,19 +161,17 @@ public class ChessGame {
         }
 
         // Loop through the board looking for enemy pieces
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = gameBoard.getPiece(position);
+        for (int pos = 0; pos < 64; pos++) {
+            int row = (pos / 8) + 1;  // Convert position to row (1-8)
+            int col = (pos % 8) + 1;  // Convert position to column (1-8)
+            ChessPosition position = new ChessPosition(row, col);
+            ChessPiece piece = gameBoard.getPiece(position);
 
-                if (piece != null && piece.getTeamColor() == enemyColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
-
-                    // Check if any move directly targets the king
-                    for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true; // King is under attack
-                        }
+            if (piece != null && piece.getTeamColor() == enemyColor) {
+                Collection<ChessMove> moves = piece.pieceMoves(gameBoard, position);
+                for (ChessMove move : moves) {
+                    if (move.getEndPosition().equals(kingPosition)) {
+                        return true; // King is under attack
                     }
                 }
             }

@@ -18,9 +18,6 @@ public class GameDataDAO {
         database.gameMap.put(id, data);
         return data;
     }
-    void getGame(GameData g) throws DataAccessException {
-
-    }
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         authorize(authToken);
         ArrayList<GameData> games = new ArrayList<>();
@@ -28,9 +25,6 @@ public class GameDataDAO {
             games.add(database.gameMap.get(g));
         }
         return games;
-    }
-    void updateGame(GameData g) throws DataAccessException {
-
     }
     private int generateID() {
         Random random = new Random();

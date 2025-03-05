@@ -16,6 +16,9 @@ import java.util.UUID;
 public class UserService {
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
+        if (registerRequest.username() == null || registerRequest.password() == null || registerRequest.email() == null) {
+            throw new DataAccessException("Error: Username, password, and email are all required");
+        }
         UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         UserDataDAO dao = new UserDataDAO();
         try {

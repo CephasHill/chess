@@ -19,7 +19,7 @@ public class StandardAPITests {
 
     private static TestCreateRequest createRequest;
 
-    private static TestServerFacade serverFacade;
+    public static TestServerFacade serverFacade;
     private static Server server;
 
     private String existingAuth;

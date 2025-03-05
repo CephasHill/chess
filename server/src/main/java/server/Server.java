@@ -8,11 +8,14 @@ import handler.*;
 import model.AuthData;
 import model.UserData;
 import request.CreateGameRequest;
+import request.ListGamesRequest;
 import result.CreateGameResult;
+import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
 import spark.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,9 +41,25 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
+        Spark.get("/game", this::listGames);
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object listGames(Request request, Response response) {
+        Gson gson = new Gson();
+        String authToken = request.headers("Authorization");
+        ListHandler handler = new ListHandler();
+        ListGamesRequest req = new ListGamesRequest(authToken);
+        try {
+            ArrayList<ArrayList<Object>> result = handler.listGames(req);
+            response.status(200);
+            return gson.toJson(Map.of("games", result));
+        } catch (DataAccessException e) {
+            response.status(401);
+            return gson.toJson(Map.of("message",e.getMessage()));
+        }
     }
 
     private Object createGame(Request request, Response response) {

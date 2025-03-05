@@ -3,8 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.UUID;
 
 import static server.Server.database;
 
@@ -14,12 +14,20 @@ public class GameDataDAO {
         authorize(authToken);
         int id = generateID();
         ChessGame game = new ChessGame();
-        return new GameData(id, null, null, gameName, game);
+        GameData data = new GameData(id, null, null, gameName, game);
+        database.gameMap.put(id, data);
+        return data;
     }
     void getGame(GameData g) throws DataAccessException {
 
     }
-    void listGames(GameData g) throws DataAccessException {
+    public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
+        authorize(authToken);
+        ArrayList<GameData> games = new ArrayList<>();
+        for (GameData g : database.gameMap.values()) {
+            games.add(g.gameID(), g);
+        }
+        return games;
     }
     void updateGame(GameData g) throws DataAccessException {
 

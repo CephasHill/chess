@@ -24,15 +24,12 @@ public class GameDataDAO {
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         authorize(authToken);
         ArrayList<GameData> games = new ArrayList<>();
-        for (GameData g : database.gameMap.values()) {
-            games.add(g.gameID(), g);
+        for (int g : database.gameMap.keySet()) {
+            games.add(database.gameMap.get(g));
         }
         return games;
     }
     void updateGame(GameData g) throws DataAccessException {
-
-    }
-    void clear() throws DataAccessException {
 
     }
     private int generateID() {
@@ -40,8 +37,40 @@ public class GameDataDAO {
         return 1000 + random.nextInt(9000);
     }
     void authorize(String authToken) throws DataAccessException {
-        if (!database.authMap.containsValue(authToken)) {
+        if (!database.authMap.containsKey(authToken)) {
             throw new DataAccessException("Error: Unauthorized");
+        }
+    }
+
+    public void join(String color, int id, String authToken) throws DataAccessException {
+        authorize(authToken);
+        if (!database.gameMap.containsKey(id)) {
+            throw new DataAccessException("Error: Unacceptable gameID");
+        }
+        GameData ogData = database.gameMap.get(id);
+        if (color == null) {
+            throw new DataAccessException("Error: Unacceptable color");
+        }
+        if (color.equalsIgnoreCase("white")) {
+            if (ogData.whiteUsername() == null) {
+                String username = database.authMap.get(authToken);
+                database.gameMap.put(id, new GameData(id, username, ogData.blackUsername(), ogData.gameName(), ogData.game()));
+            }
+            else {
+                throw new DataAccessException("Error: Unavailable");
+            }
+        }
+        else if (color.equalsIgnoreCase("black")) {
+            if (ogData.blackUsername() == null) {
+                String username = database.authMap.get(authToken);
+                database.gameMap.put(id, new GameData(id, ogData.whiteUsername(), username, ogData.gameName(), ogData.game()));
+            }
+            else {
+                throw new DataAccessException("Error: Unavailable");
+            }
+        }
+        else {
+            throw new DataAccessException("Error: Unacceptable color");
         }
     }
 }

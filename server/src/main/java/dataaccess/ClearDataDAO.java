@@ -10,5 +10,8 @@ public class ClearDataDAO {
         if (!database.userMap.isEmpty()) {
             database.userMap.clear();
         }
+        if (!database.gameMap.isEmpty()) {
+            database.gameMap.clear();
+        }
     }
 }

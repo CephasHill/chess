@@ -6,8 +6,10 @@ import dataaccess.DataAccessException;
 import dataaccess.Database;
 import handler.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import request.CreateGameRequest;
+import request.JoinGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
 import result.ListGamesResult;
@@ -42,9 +44,45 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
         Spark.get("/game", this::listGames);
+        Spark.put("/game", this::joinGame);
 
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    private Object joinGame(Request request, Response response) {
+        Gson gson = new Gson();
+        String authToken = request.headers("Authorization");
+        var body = request.body();
+        JoinGameRequest temp = gson.fromJson(body, JoinGameRequest.class);
+        JoinGameRequest joinRequest = new JoinGameRequest(temp.playerColor(), temp.gameID(), authToken);
+        JoinHandler handler = new JoinHandler();
+        try {
+            handler.join(joinRequest);
+            response.status(200);
+            return "";
+        } catch (DataAccessException e) {
+            if (e.getMessage().equals("Error: Unavailable")) {
+                response.status(403);
+                return gson.toJson(Map.of("message", e.getMessage()));
+            }
+            else if (e.getMessage().equals("Error: Unacceptable color")) {
+                response.status(400);
+                return gson.toJson(Map.of("message", e.getMessage()));
+            }
+            else if (e.getMessage().equals("Error: Unacceptable gameID")) {
+                response.status(400);
+                return gson.toJson(Map.of("message", e.getMessage()));
+            }
+            else if (e.getMessage().equals("Error: Unauthorized")) {
+                response.status(401);
+                return gson.toJson(Map.of("message", e.getMessage()));
+            }
+            else {
+                response.status(500);
+                return gson.toJson(Map.of("message", e.getMessage()));
+            }
+        }
     }
 
     private Object listGames(Request request, Response response) {
@@ -53,7 +91,7 @@ public class Server {
         ListHandler handler = new ListHandler();
         ListGamesRequest req = new ListGamesRequest(authToken);
         try {
-            ArrayList<ArrayList<Object>> result = handler.listGames(req);
+            ArrayList<GameData> result = handler.listGames(req);
             response.status(200);
             return gson.toJson(Map.of("games", result));
         } catch (DataAccessException e) {

@@ -25,7 +25,9 @@ public class GameService {
         ArrayList<GameData> gameListArray = dao.listGames(authToken);
         return new ListGamesResult(gameListArray);
     }
-    public JoinGameResult joinGame(JoinGameRequest request) {
-        return null;
+    public JoinGameResult joinGame(String color, int id, String authToken) throws DataAccessException {
+        GameDataDAO dao = new GameDataDAO();
+        dao.join(color, id, authToken);
+        return new JoinGameResult();
     }
 }

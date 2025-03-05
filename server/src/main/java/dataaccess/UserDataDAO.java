@@ -14,7 +14,7 @@ public class UserDataDAO {
         Pair<String, String> pair = new Pair<>(u.password(), u.email());
         database.userMap.put(u.username(), pair);
         String auth = generateAuth();
-        database.authMap.put(u.username(), auth);
+        database.authMap.put(auth, u.username());
         return new AuthData(u.username(),auth);
     }
     public AuthData loginUser(String username, String password) throws DataAccessException {
@@ -26,7 +26,7 @@ public class UserDataDAO {
         }
         if (database.userMap.get(username).getLeft().equals(password)) {
             String auth = generateAuth();
-            database.authMap.put(username, auth);
+            database.authMap.put(auth, username);
             return new AuthData(username,auth);
         }
         else {
@@ -45,10 +45,9 @@ public class UserDataDAO {
     }
 
     public void logout(String authToken) throws DataAccessException {
-        if (!database.authMap.containsValue(authToken)) {
+        if (!database.authMap.containsKey(authToken)) {
             throw new DataAccessException("Error: AuthToken not found");
         }
-        String key = database.getKeyByValue(database.authMap, authToken);
-        database.authMap.remove(key);
+        database.authMap.remove(authToken);
     }
 }

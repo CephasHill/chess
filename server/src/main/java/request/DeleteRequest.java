@@ -1,4 +1,4 @@
 package request;
 
-public record DeleteRequest() {
+public record DeleteRequest(String storageType) {
 }

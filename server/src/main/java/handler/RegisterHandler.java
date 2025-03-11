@@ -10,7 +10,7 @@ public class RegisterHandler {
 
         UserService userService = new UserService();
         try {
-            return userService.register(new RegisterRequest(username, password, email));
+            return userService.register(new RegisterRequest(username, password, email, storageType));
         }
         catch (DataAccessException e) {
             throw new DataAccessException(e.getMessage());

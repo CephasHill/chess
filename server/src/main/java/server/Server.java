@@ -22,7 +22,7 @@ import java.util.Objects;
 public class Server {
     public static MemoryDatabase database = new MemoryDatabase();
 
-    public static String storageType = "sql"; // "mem" or "sql"
+    public static String storageType = "mem"; // "mem" or "sql"
 
     public static MemoryDatabase getDatabase() {
         return database;
@@ -38,7 +38,7 @@ public class Server {
         Spark.staticFiles.location("web");
         // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearDB);
-        Spark.post("/user", this::addUser);
+        Spark.post("/user", this::registerUser);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
@@ -168,7 +168,7 @@ public class Server {
         return "";
     }
 
-    private Object addUser (Request request, Response response) {
+    private Object registerUser(Request request, Response response) {
         Gson gson = new Gson();
         var u = gson.fromJson(request.body(), UserData.class);
         if (u.username() == null || u.password() == null || u.email() == null) {

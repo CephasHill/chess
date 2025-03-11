@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDataDAO;
+import dataaccess.MySqlUserDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
@@ -20,28 +21,55 @@ public class UserService {
             throw new DataAccessException("Error: Username, password, and email are all required");
         }
         UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-        MemoryUserDataDAO dao = new MemoryUserDataDAO();
-        try {
-            dao.getUser(registerRequest.username());
+        if (registerRequest.storageType().equals("mem")) {
+            MemoryUserDataDAO dao = new MemoryUserDataDAO();
+            try {
+                dao.getUser(registerRequest.username());
+            } catch (DataAccessException e) {
+                AuthData authData = dao.createUser(userData);
+                return new RegisterResult(authData);
+            }
+            throw new DataAccessException("Error: Username already exists");
         }
-        catch (DataAccessException e) {
-            AuthData authData = dao.createUser(userData);
-            return new RegisterResult(authData);
+        else {
+            MySqlUserDAO dao = new MySqlUserDAO();
+            try {
+                dao.getUser(registerRequest.username());
+            } catch (DataAccessException e) {
+                AuthData authData = dao.createUser(userData);
+                return new RegisterResult(authData);
+            }
+            throw new DataAccessException("Error: Username already exists");
         }
-        throw new DataAccessException("Error: Username already exists");
     }
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
-        MemoryUserDataDAO dao = new MemoryUserDataDAO();
-        AuthData a = dao.loginUser(loginRequest.username(), loginRequest.password());
-        return new LoginResult(a.username(),a.authToken());
+        if (loginRequest.storageType().equals("mem")) {
+            MemoryUserDataDAO dao = new MemoryUserDataDAO();
+            AuthData a = dao.loginUser(loginRequest.username(), loginRequest.password());
+            return new LoginResult(a.username(), a.authToken());
+        }
+        else {
+            MySqlUserDAO dao = new MySqlUserDAO();
+            AuthData a = dao.loginUser(loginRequest.username(), loginRequest.password());
+            return new LoginResult(a.username(), a.authToken());
+        }
     }
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        MemoryUserDataDAO dao = new MemoryUserDataDAO();
-        try {
-            dao.logout(logoutRequest.authToken());
+        if (logoutRequest.storageType().equals("mem")) {
+            MemoryUserDataDAO dao = new MemoryUserDataDAO();
+            try {
+                dao.logout(logoutRequest.authToken());
+            } catch (DataAccessException e) {
+                throw new DataAccessException("Error: Invalid auth token");
+            }
         }
-        catch (DataAccessException e) {
-            throw new DataAccessException("Error: Invalid auth token");
+        else {
+            MySqlUserDAO dao = new MySqlUserDAO();
+            try {
+                dao.logout(logoutRequest.authToken());
+            } catch (DataAccessException e) {
+                throw new DataAccessException("Error: Invalid auth token");
+            }
         }
         return new LogoutResult();
     }

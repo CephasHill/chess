@@ -11,6 +11,6 @@ public class LoginHandler {
         String username = u.username();
         String password = u.password();
         UserService service = new UserService();
-        return service.login(new LoginRequest(username, password));
+        return service.login(new LoginRequest(username, password, storageType));
     }
 }

@@ -9,7 +9,8 @@ public class JoinHandler {
         String color = joinRequest.playerColor();
         int id = joinRequest.gameID();
         String authToken = joinRequest.authToken();
+        String storageType = joinRequest.storageType();
         GameService service = new GameService();
-        service.joinGame(color, id, authToken);
+        service.joinGame(color, id, authToken, storageType);
     }
 }

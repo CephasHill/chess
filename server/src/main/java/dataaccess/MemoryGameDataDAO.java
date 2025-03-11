@@ -8,7 +8,7 @@ import java.util.Random;
 
 import static server.Server.database;
 
-public class GameDataDAO {
+public class MemoryGameDataDAO {
 
     public GameData createGame(String gameName, String authToken) throws DataAccessException {
         authorize(authToken);

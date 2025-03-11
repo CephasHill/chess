@@ -7,7 +7,7 @@ import result.LoginResult;
 import service.UserService;
 
 public class LoginHandler {
-    public LoginResult login(UserData u) throws DataAccessException {
+    public LoginResult login(UserData u, String storageType) throws DataAccessException {
         String username = u.username();
         String password = u.password();
         UserService service = new UserService();

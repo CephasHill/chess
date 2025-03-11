@@ -1,9 +1,8 @@
 package server;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import dataaccess.DataAccessException;
-import dataaccess.Database;
+import dataaccess.MemoryDatabase;
 import handler.*;
 import model.AuthData;
 import model.GameData;
@@ -12,7 +11,6 @@ import request.CreateGameRequest;
 import request.JoinGameRequest;
 import request.ListGamesRequest;
 import result.CreateGameResult;
-import result.ListGamesResult;
 import result.LoginResult;
 import result.RegisterResult;
 import spark.*;
@@ -22,13 +20,15 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Server {
-    public static Database database = new Database();
+    public static MemoryDatabase database = new MemoryDatabase();
 
-    public static Database getDatabase() {
+    public static String storageType = "sql"; // "mem" or "sql"
+
+    public static MemoryDatabase getDatabase() {
         return database;
     }
 
-    public static void setDatabase(Database database) {
+    public static void setDatabase(MemoryDatabase database) {
         Server.database = database;
     }
 
@@ -54,7 +54,7 @@ public class Server {
         String authToken = request.headers("Authorization");
         var body = request.body();
         JoinGameRequest temp = gson.fromJson(body, JoinGameRequest.class);
-        JoinGameRequest joinRequest = new JoinGameRequest(temp.playerColor(), temp.gameID(), authToken);
+        JoinGameRequest joinRequest = new JoinGameRequest(temp.playerColor(), temp.gameID(), authToken, storageType);
         JoinHandler handler = new JoinHandler();
         try {
             handler.join(joinRequest);
@@ -88,7 +88,7 @@ public class Server {
         Gson gson = new Gson();
         String authToken = request.headers("Authorization");
         ListHandler handler = new ListHandler();
-        ListGamesRequest req = new ListGamesRequest(authToken);
+        ListGamesRequest req = new ListGamesRequest(authToken, storageType);
         try {
             ArrayList<GameData> result = handler.listGames(req);
             response.status(200);
@@ -107,7 +107,7 @@ public class Server {
         }
         String authToken = request.headers("Authorization");
         var temp = gson.fromJson(request.body(), CreateGameRequest.class);
-        CreateGameRequest req = new CreateGameRequest(temp.gameName(), authToken);
+        CreateGameRequest req = new CreateGameRequest(temp.gameName(), authToken, storageType);
         CreateHandler handler = new CreateHandler();
         try {
             CreateGameResult result = handler.createGame(req);
@@ -124,7 +124,7 @@ public class Server {
         String authToken = request.headers("Authorization");
         LogoutHandler handler = new LogoutHandler();
         try {
-            handler.logout(authToken);
+            handler.logout(authToken, storageType);
         }
         catch (Exception e) {
             response.status(401);
@@ -145,7 +145,7 @@ public class Server {
         }
         LoginHandler handler = new LoginHandler();
         try {
-            LoginResult result = handler.login(u);
+            LoginResult result = handler.login(u, storageType);
             AuthData a = new AuthData(result.username(),result.authToken());
             return gson.toJson(a);
         }
@@ -163,7 +163,7 @@ public class Server {
 
     private Object clearDB(Request request, Response response) {
         ClearHandler clearHandler = new ClearHandler();
-        clearHandler.clearAll();
+        clearHandler.clearAll(storageType);
         response.status(200);
         return "";
     }
@@ -179,7 +179,7 @@ public class Server {
         RegisterHandler handler = new RegisterHandler();
         RegisterResult handlerResult = null;
         try {
-            handlerResult = handler.register(u.username(),u.password(),u.email());
+            handlerResult = handler.register(u.username(),u.password(),u.email(), storageType);
         } catch (DataAccessException e) {
             response.status(403);
             Map<String,String> errorMap = Map.of("message", e.getMessage());

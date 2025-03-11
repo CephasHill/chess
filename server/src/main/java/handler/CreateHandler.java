@@ -10,6 +10,6 @@ public class CreateHandler {
         String gameName = req.gameName();
         String authToken = req.authorization();
         GameService gameService = new GameService();
-        return gameService.createGame(gameName, authToken);
+        return gameService.createGame(gameName, authToken, req.storageType());
     }
 }

@@ -1,6 +1,6 @@
 package service;
 
-import dataaccess.ClearDataDAO;
+import dataaccess.MemoryClearDataDAO;
 import request.DeleteRequest;
 
 public class ClearService {
@@ -8,7 +8,7 @@ public class ClearService {
         if (request == null) {
             throw new NullPointerException("request is null");
         }
-        ClearDataDAO dao = new ClearDataDAO();
+        MemoryClearDataDAO dao = new MemoryClearDataDAO();
         dao.clearData();
     }
 }

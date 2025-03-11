@@ -1,8 +1,6 @@
 package service;
 
-import dataaccess.ClearDataDAO;
 import dataaccess.DataAccessException;
-import model.GameData;
 import org.junit.jupiter.api.*;
 import request.*;
 import result.*;
@@ -89,8 +87,8 @@ public class ServiceTests {
     @DisplayName("List games positive test")
     public void listPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email"));
-        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken());
-        ListGamesResult listRes = gameService.listGames(regRes.authData().authToken());
+        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
+        ListGamesResult listRes = gameService.listGames(regRes.authData().authToken(), "mem");
 
         assertNotNull(listRes);
         assertEquals(new ListGamesResult(new ArrayList<>(listRes.gameData())), listRes);
@@ -102,7 +100,7 @@ public class ServiceTests {
     public void listNeg() {
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.listGames("");
+            gameService.listGames("", "mem");
         });
     }
     @Test
@@ -110,7 +108,7 @@ public class ServiceTests {
     @DisplayName("Create game positive test")
     public void createPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email"));
-        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken());
+        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
 
         assertNotNull(createRes);
         assertEquals(new CreateGameResult(createRes.id()), createRes);
@@ -122,7 +120,7 @@ public class ServiceTests {
     public void createNeg() {
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.createGame("game",null);
+            gameService.createGame("game",null, "mem");
         });
     }
     @Test
@@ -130,8 +128,8 @@ public class ServiceTests {
     @DisplayName("Join game positive test")
     public void joinPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email"));
-        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken());
-        JoinGameResult joinRes = gameService.joinGame("white", createRes.id(), regRes.authData().authToken());
+        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
+        JoinGameResult joinRes = gameService.joinGame("white", createRes.id(), regRes.authData().authToken(), "mem");
 
         assertNotNull(joinRes);
 
@@ -142,7 +140,7 @@ public class ServiceTests {
     public void joinNeg() {
 
         assertThrows(DataAccessException.class, () -> {
-            gameService.joinGame("white",1,"black");
+            gameService.joinGame("white",1,"black", "mem");
         });
     }
     @Test
@@ -150,8 +148,8 @@ public class ServiceTests {
     @DisplayName("clear positive test")
     public void clearPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email"));
-        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken());
-        JoinGameResult joinRes = gameService.joinGame("white", createRes.id(), regRes.authData().authToken());
+        CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
+        JoinGameResult joinRes = gameService.joinGame("white", createRes.id(), regRes.authData().authToken(), "mem");
         ClearService clearService = new ClearService();
         clearService.clearAll(new DeleteRequest());
 

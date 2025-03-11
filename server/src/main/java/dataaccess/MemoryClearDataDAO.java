@@ -2,7 +2,7 @@ package dataaccess;
 
 import static server.Server.database;
 
-public class ClearDataDAO {
+public class MemoryClearDataDAO {
     public void clearData() {
         if (!database.authMap.isEmpty()) {
             database.authMap.clear();

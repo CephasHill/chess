@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.UserDataDAO;
+import dataaccess.MemoryUserDataDAO;
 import model.AuthData;
 import model.UserData;
 import request.LoginRequest;
@@ -20,7 +20,7 @@ public class UserService {
             throw new DataAccessException("Error: Username, password, and email are all required");
         }
         UserData userData = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
-        UserDataDAO dao = new UserDataDAO();
+        MemoryUserDataDAO dao = new MemoryUserDataDAO();
         try {
             dao.getUser(registerRequest.username());
         }
@@ -31,12 +31,12 @@ public class UserService {
         throw new DataAccessException("Error: Username already exists");
     }
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
-        UserDataDAO dao = new UserDataDAO();
+        MemoryUserDataDAO dao = new MemoryUserDataDAO();
         AuthData a = dao.loginUser(loginRequest.username(), loginRequest.password());
         return new LoginResult(a.username(),a.authToken());
     }
     public LogoutResult logout(LogoutRequest logoutRequest) throws DataAccessException {
-        UserDataDAO dao = new UserDataDAO();
+        MemoryUserDataDAO dao = new MemoryUserDataDAO();
         try {
             dao.logout(logoutRequest.authToken());
         }

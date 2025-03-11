@@ -1,33 +1,50 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.GameDataDAO;
+import dataaccess.MemoryGameDataDAO;
+import dataaccess.MySqlGameDAO;
 import model.GameData;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import request.ListGamesRequest;
 import result.CreateGameResult;
 import result.JoinGameResult;
 import result.ListGamesResult;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class GameService {
-    public CreateGameResult createGame(String gameName, String authToken) throws DataAccessException {
-        GameDataDAO dao = new GameDataDAO();
-        GameData data = dao.createGame(gameName, authToken);
-        return new CreateGameResult(data.gameID());
+    public CreateGameResult createGame(String gameName, String authToken, String storageType) throws DataAccessException {
+        if (storageType.equals("mem")) {
+            MemoryGameDataDAO dao = new MemoryGameDataDAO();
+            GameData data = dao.createGame(gameName, authToken);
+            return new CreateGameResult(data.gameID());
+        }
+        else {
+            MySqlGameDAO dao = new MySqlGameDAO();
+            GameData data = dao.createGame(gameName, authToken);
+            return new CreateGameResult(data.gameID());
+        }
     }
-    public ListGamesResult listGames(String authToken) throws DataAccessException {
-        GameDataDAO dao = new GameDataDAO();
-        ArrayList<GameData> gameListArray = dao.listGames(authToken);
-        return new ListGamesResult(gameListArray);
+    public ListGamesResult listGames(String authToken, String storageType) throws DataAccessException {
+        if (storageType.equals("mem")) {
+            MemoryGameDataDAO dao = new MemoryGameDataDAO();
+            ArrayList<GameData> gameListArray = dao.listGames(authToken);
+            return new ListGamesResult(gameListArray);
+        }
+        else {
+            MySqlGameDAO dao = new MySqlGameDAO();
+            ArrayList<GameData> gameListArray = dao.listGames(authToken);
+            return new ListGamesResult(gameListArray);
+        }
     }
-    public JoinGameResult joinGame(String color, int id, String authToken) throws DataAccessException {
-        GameDataDAO dao = new GameDataDAO();
-        dao.join(color, id, authToken);
-        return new JoinGameResult();
+    public JoinGameResult joinGame(String color, int id, String authToken, String storageType) throws DataAccessException {
+        if (storageType.equals("mem")) {
+            MemoryGameDataDAO dao = new MemoryGameDataDAO();
+            dao.join(color, id, authToken);
+            return new JoinGameResult();
+        }
+        else {
+            MySqlGameDAO dao = new MySqlGameDAO();
+            dao.join(color, id, authToken);
+            return new JoinGameResult();
+        }
     }
 }

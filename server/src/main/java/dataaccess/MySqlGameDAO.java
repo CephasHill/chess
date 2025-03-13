@@ -17,30 +17,39 @@ public class MySqlGameDAO {
     public GameData createGame(String gameName, String authToken) throws DataAccessException {
         authorize(authToken);
         Gson gson = new Gson();
-        int id = generateID();
         ChessGame game = new ChessGame();
-        var json = gson.toJson(game);
+        String json = gson.toJson(game);
+        int generatedId = 0;
         try (Connection conn = getConnection()) {
             conn.setAutoCommit(false);
-            try {
-                String statement = "INSERT INTO games (id, whiteUsername, blackUsername, gameName, chessGame) VALUES (?,?,?,?,?);";
-                try (PreparedStatement ps = conn.prepareStatement(statement)) {
-                    ps.setInt(1, id);
-                    ps.setNull(2, Types.VARCHAR);
-                    ps.setNull(3, Types.VARCHAR);
-                    ps.setString(4, gameName);
-                    ps.setObject(5, json);
-                    ps.executeUpdate();
+            String statement = "INSERT INTO games (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2, Types.VARCHAR);
+                ps.setString(3, gameName);
+                ps.setObject(4, json);
+                ps.executeUpdate();
+
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        generatedId = rs.getInt(1);
+                    } else {
+                        throw new DataAccessException("No generated ID returned");
+                    }
                 }
+                conn.commit();
             } catch (SQLException e) {
-                throw new DataAccessException("Error: " + e.getMessage());
+                conn.rollback();
+                throw new DataAccessException("Failed to insert game: " + e.getMessage());
+            } finally {
+                conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: " + e.getMessage());
         }
-        GameData data = new GameData(id, null, null, gameName, game);
-        return data;
+        return new GameData(generatedId, null, null, gameName, game);
     }
+
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         authorize(authToken);
         ArrayList<GameData> games = new ArrayList<>();
@@ -48,10 +57,6 @@ public class MySqlGameDAO {
             games.add(database.gameMap.get(g));
         }
         return games;
-    }
-    private int generateID() {
-        Random random = new Random();
-        return 1000 + random.nextInt(9000);
     }
 
     public void join(String color, int id, String authToken) throws DataAccessException {

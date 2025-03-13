@@ -151,6 +151,7 @@ public class Server {
             return gson.toJson(a);
         }
         catch (Exception e) {
+            var message = e.getMessage();
             if (Objects.equals(e.getMessage(), "Error: Wrong password") || Objects.equals(e.getMessage(), "Error: User not found")) {
                 response.status(401);
             }

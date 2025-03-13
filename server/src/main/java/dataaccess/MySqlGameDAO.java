@@ -85,7 +85,7 @@ public class MySqlGameDAO {
                     ps.setInt(1, id);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            throw new DataAccessException("Error: No games found with that id.");
+                            throw new DataAccessException("Error: Unacceptable gameID");
                         }
                         whiteUsername = rs.getString("whiteUsername");
                         blackUsername = rs.getString("blackUsername");
@@ -94,17 +94,17 @@ public class MySqlGameDAO {
                 String updateQuery;
                 if ("white".equalsIgnoreCase(color)) {
                     if (whiteUsername != null) {
-                        throw new DataAccessException("Error: White player already exists.");
+                        throw new DataAccessException("Error: Unavailable");
                     }
                     updateQuery = "UPDATE games SET whiteUsername = ? WHERE id = ?";
                 }
                 else if ("black".equalsIgnoreCase(color)) {
                     if (blackUsername != null) {
-                        throw new DataAccessException("Error: Black player already exists.");
+                        throw new DataAccessException("Error: Unavailable");
                     }
                     updateQuery = "UPDATE games SET blackUsername = ? WHERE id = ?";
                 } else {
-                    throw new DataAccessException("Error: Invalid color.");
+                    throw new DataAccessException("Error: Unacceptable color");
                 }
                 try (PreparedStatement ps = conn.prepareStatement(updateQuery)) {
                     ps.setString(1, username);

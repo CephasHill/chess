@@ -53,7 +53,7 @@ public class DatabaseManager {
             ps.setString(1, authToken);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) {
-                    throw new DataAccessException("Error: Auth does not exist.");
+                    throw new DataAccessException("Error: Unauthorized");
                 }
                 username = rs.getString("username");
             }

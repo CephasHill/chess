@@ -67,7 +67,7 @@ public class MySqlUserDAO {
         try {
             getUser(username);
         } catch (Exception e) {
-            throw new DataAccessException("Error: User not found.");
+            throw new DataAccessException("Error: User not found");
         }
         try (Connection conn = DatabaseManager.getConnection()) {
             conn.setAutoCommit(false);
@@ -78,13 +78,13 @@ public class MySqlUserDAO {
                     ps.setString(1, username);
                     try (ResultSet rs = ps.executeQuery()) {
                         if (!rs.next()) {
-                            throw new DataAccessException("Error: User not found.");
+                            throw new DataAccessException("Error: User not found");
                         }
                         storedHash = rs.getString("password_hash");
                     }
                 }
                 if (!BCrypt.checkpw(password, storedHash)) {
-                    throw new DataAccessException("Error: Incorrect password.");
+                    throw new DataAccessException("Error: Wrong password");
                 }
                 String insertAuth = "REPLACE INTO auth (username, auth) VALUES (?, ?)";
                 try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {

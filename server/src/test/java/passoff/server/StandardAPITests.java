@@ -19,7 +19,7 @@ public class StandardAPITests {
 
     private static TestCreateRequest createRequest;
 
-    public static TestServerFacade serverFacade;
+    private static TestServerFacade serverFacade;
     private static Server server;
 
     private String existingAuth;
@@ -291,7 +291,7 @@ public class StandardAPITests {
         TestUser userA = new TestUser("a", "A", "a.A");
         TestUser userB = new TestUser("b", "B", "b.B");
         TestUser userC = new TestUser("c", "C", "c.C");
-        
+
         TestAuthResult authA = serverFacade.register(userA);
         TestAuthResult authB = serverFacade.register(userB);
         TestAuthResult authC = serverFacade.register(userC);
@@ -478,4 +478,5 @@ public class StandardAPITests {
         Assertions.assertNull(result.getUsername(), "Response incorrectly returned username");
         Assertions.assertNull(result.getAuthToken(), "Response incorrectly return authentication String");
     }
+
 }

@@ -86,7 +86,7 @@ public class MySqlUserDAO {
                 if (!BCrypt.checkpw(password, storedHash)) {
                     throw new DataAccessException("Error: Incorrect password.");
                 }
-                String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
+                String insertAuth = "REPLACE INTO auth (username, auth) VALUES (?, ?)";
                 try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
                     psAuth.setString(1, username);
                     psAuth.setString(2, generateAuth());

@@ -4,6 +4,8 @@ import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.xml.crypto.Data;
+
 import static dataaccess.DatabaseManager.authorize;
 import static dataaccess.DatabaseManager.getConnection;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -67,30 +69,40 @@ public class MySqlUserDAO {
         } catch (Exception e) {
             throw new DataAccessException("Error: User not found.");
         }
-        String query = "SELECT * FROM users WHERE username = ?";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            ps.setString(1, username);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    String storedHash = rs.getString("password_hash");
-                    if (!BCrypt.checkpw(password, storedHash)) {
-                        throw new DataAccessException("Error: Password does not match.");
+        try (Connection conn = DatabaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                String query = "SELECT password_hash FROM users WHERE username = ?";
+                String storedHash;
+                try (PreparedStatement ps = conn.prepareStatement(query)) {
+                    ps.setString(1, username);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (!rs.next()) {
+                            throw new DataAccessException("Error: User not found.");
+                        }
+                        storedHash = rs.getString("password_hash");
                     }
-                } else {
-                    throw new DataAccessException("Error: Username not found.");
                 }
-            }
-            String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
-            try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
-                psAuth.setString(1, username);
-                psAuth.setString(2, generateAuth());
-                psAuth.executeUpdate();
+                if (!BCrypt.checkpw(password, storedHash)) {
+                    throw new DataAccessException("Error: Incorrect password.");
+                }
+                String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
+                try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
+                    psAuth.setString(1, username);
+                    psAuth.setString(2, generateAuth());
+                    psAuth.executeUpdate();
+                }
+                conn.commit();
+                return new AuthData(username, authToken);
+            } catch (SQLException e) {
+                conn.rollback();
+                throw new DataAccessException("Database error: " + e.getMessage());
+            } finally {
+                conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
             throw new DataAccessException("Database error.");
         }
-        return new AuthData(username, authToken);
     }
 
     private String generateAuth() {

@@ -147,6 +147,7 @@ public class Server {
         try {
             LoginResult result = handler.login(u, storageType);
             AuthData a = new AuthData(result.username(),result.authToken());
+            response.status(200);
             return gson.toJson(a);
         }
         catch (Exception e) {

@@ -91,8 +91,8 @@ public class DatabaseManager {
         String createGamesTable = """
                 CREATE TABLE IF NOT EXISTS games (
                     id INT AUTO_INCREMENT PRIMARY KEY,
-                    whiteUsername VARCHAR(256) NOT NULL,
-                    blackUsername VARCHAR(256) NOT NULL,
+                    whiteUsername VARCHAR(256),
+                    blackUsername VARCHAR(256),
                     gameName VARCHAR(256) NOT NULL,
                     chessGame JSON NOT NULL
                 );""";
@@ -101,15 +101,6 @@ public class DatabaseManager {
             stmt.executeUpdate(createUsersTable);
             stmt.executeUpdate(createAuthTable);
             stmt.executeUpdate(createGamesTable);
-        }
-    }
-
-    public static void main(String[] args) {
-        try {
-            initializeDatabase();
-            System.out.println("Database initialized successfully.");
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 

@@ -9,12 +9,17 @@ import static server.Server.database;
 
 public class MySqlClearDAO {
 
-    public void clearData() throws SQLException {
-        try (Connection conn = DatabaseManager.getConnection(); // Use existing method
+    public static void clearData() throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("DELETE FROM auth");
-            stmt.executeUpdate("DELETE FROM users");
-            stmt.executeUpdate("DELETE FROM games");
+            stmt.executeUpdate("DROP TABLE IF EXISTS auth");
+            stmt.executeUpdate("DROP TABLE IF EXISTS users");
+            stmt.executeUpdate("DROP TABLE IF EXISTS games");
+            // Optional: Recreate tables
+             DatabaseManager.initializeDatabase();
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to drop tables: " + e.getMessage());
         }
     }
 }
+

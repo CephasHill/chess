@@ -996,7 +996,7 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
     </collation>
     <schema id="288" parent="1" name="chess_db">
       <Current>1</Current>
-      <LastIntrospectionLocalTimestamp>2025-03-12.23:39:41</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-03-13.03:35:08</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_0900_ai_ci</CollationName>
     </schema>
     <schema id="289" parent="1" name="information_schema">
@@ -1074,12 +1074,10 @@ sys|schema||mysql.sys|localhost|TRIGGER|G</Grants>
       <StoredType>int|0s</StoredType>
     </column>
     <column id="307" parent="300" name="whiteUsername">
-      <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(256)|0s</StoredType>
     </column>
     <column id="308" parent="300" name="blackUsername">
-      <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(256)|0s</StoredType>
     </column>

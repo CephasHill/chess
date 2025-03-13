@@ -1,9 +1,5 @@
-package DataAccess;
+package dataaccess;
 
-import dataaccess.DataAccessException;
-import dataaccess.DatabaseManager;
-import dataaccess.MySqlClearDAO;
-import dataaccess.MySqlUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -188,6 +184,25 @@ public class DataAccessTests {
             ps.executeQuery();
             try (ResultSet rs = ps.executeQuery()) {
                 assertFalse(rs.next(), "Auth entry should not exist");
+            }
+        }
+    }
+    @Test
+    public void testCreateGameSuccess() throws Exception {
+        // Test successful registration
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO userDao = new MySqlUserDAO();
+        AuthData a = userDao.createUser(new UserData(username, password, email));
+        MySqlGameDAO gameDao = new MySqlGameDAO();
+        gameDao.createGame("game name", a.authToken());
+        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD);
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM games WHERE gameName = ?")) {
+            ps.setString(1, "game name");
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next(), "Game entry should exist");
             }
         }
     }

@@ -67,7 +67,7 @@ public class DatabaseManager {
     /**
      * Creates the database if it does not already exist.
      */
-    static void createDatabase() throws DataAccessException {
+    public static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + DATABASE_NAME;
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
@@ -128,5 +128,10 @@ public class DatabaseManager {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public static void main(String[] args) throws DataAccessException, SQLException {
+        DatabaseManager.createDatabase();
+        DatabaseManager.initializeDatabase();
+        System.out.println("Database setup complete!");
     }
 }

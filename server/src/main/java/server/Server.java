@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.MemoryDatabase;
 import handler.*;
 import model.AuthData;
@@ -15,6 +16,7 @@ import result.LoginResult;
 import result.RegisterResult;
 import spark.*;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -33,10 +35,16 @@ public class Server {
     }
 
     public int run(int desiredPort) {
+        if (storageType.equals("sql")) {
+            try {
+                DatabaseManager.createDatabase();
+                DatabaseManager.initializeDatabase();
+            } catch (DataAccessException | SQLException e) {
+                throw new RuntimeException("Failed to initialize database: " + e.getMessage());
+            }
+        }
         Spark.port(desiredPort);
-
         Spark.staticFiles.location("web");
-        // Register your endpoints and handle exceptions here.
         Spark.delete("/db", this::clearDB);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::login);
@@ -44,7 +52,6 @@ public class Server {
         Spark.post("/game", this::createGame);
         Spark.get("/game", this::listGames);
         Spark.put("/game", this::joinGame);
-
         Spark.awaitInitialization();
         return Spark.port();
     }

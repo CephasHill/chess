@@ -6,11 +6,9 @@ import model.GameData;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 import static dataaccess.DatabaseManager.authorize;
 import static dataaccess.DatabaseManager.getConnection;
-import static server.Server.database;
 
 public class MySqlGameDAO {
 

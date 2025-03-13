@@ -19,66 +19,68 @@ public class MySqlUserDAO {
         return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 
-    public AuthData createUser(UserData u) throws DataAccessException, SQLException {
-        try {
-            getUser(u.username());
+    public AuthData createUser(UserData u) throws DataAccessException {
+        if (userExists(u.username())) { // Level 1
+            throw new DataAccessException("Username already exists.");
         }
-        catch (Exception e) {
-            String authToken = generateAuth();
-            try (Connection conn = getConnection()) {
-                conn.setAutoCommit(false);
-                try {
-                    String insertUser = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
-                    try (PreparedStatement ps = conn.prepareStatement(insertUser)) {
-                        ps.setString(1, u.username());
-                        ps.setString(2, hashPassword(u.password()));
-                        ps.setString(3, u.email());
-                        ps.executeUpdate();
-                        String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
-                        try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
-                            psAuth.setString(1, u.username());
-                            psAuth.setString(2, authToken);
-                            psAuth.executeUpdate();
-                        }
-                    }
-                    conn.commit();
-                } catch (Exception e2) {
-                    conn.rollback();
-                    if (e2 instanceof SQLException && ((SQLException) e2).getErrorCode() == 1062) {
-                        throw new DataAccessException("Username or email already exists.");
-                    }
-                    throw new DataAccessException("Username or email already exists.");
-                } finally {
-                    conn.setAutoCommit(true);
+        String authToken = generateAuth();
+        try (Connection conn = getConnection()) { // Level 2
+            conn.setAutoCommit(false);
+            try { // Level 3
+                String insertUser = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
+                try (PreparedStatement ps = conn.prepareStatement(insertUser)) { // Level 4
+                    ps.setString(1, u.username());
+                    ps.setString(2, hashPassword(u.password()));
+                    ps.setString(3, u.email());
+                    ps.executeUpdate();
                 }
+                String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
+                try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) { // Level 4
+                    psAuth.setString(1, u.username());
+                    psAuth.setString(2, authToken);
+                    psAuth.executeUpdate();
+                }
+                conn.commit();
+                return new AuthData(u.username(), authToken);
+            } catch (SQLException e) {
+                conn.rollback();
+                if (e.getErrorCode() == 1062) {
+                    throw new DataAccessException("Username or email already exists.");
+                }
+                throw new DataAccessException("Failed to create user: " + e.getMessage());
+            } finally {
+                conn.setAutoCommit(true);
             }
-            return new AuthData(u.username(), authToken);
+        } catch (SQLException e) {
+            throw new DataAccessException("Connection error: " + e.getMessage());
         }
-        throw new DataAccessException("Username already exists.");
+    }
+
+    // Helper method to check if user exists
+    private boolean userExists(String username) throws DataAccessException {
+        String query = "SELECT username FROM users WHERE username = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Database error: " + e.getMessage());
+        }
     }
 
     public AuthData loginUser(String username, String password) throws DataAccessException {
-        String authToken = generateAuth();
-        try (Connection conn = DatabaseManager.getConnection()) {
+        String authToken = generateAuth(); // Level 1
+        try (Connection conn = DatabaseManager.getConnection()) { // Level 2
             conn.setAutoCommit(false);
-            try {
-                UserData user = getUser(username);
-                String query = "SELECT password_hash FROM users WHERE username = ?";
-                String storedHash;
-                try (PreparedStatement ps = conn.prepareStatement(query)) {
-                    ps.setString(1, username);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (!rs.next()) {
-                            throw new DataAccessException("Error: User not found");
-                        }
-                        storedHash = rs.getString("password_hash");
-                    }
-                }
-                if (!BCrypt.checkpw(password, storedHash)) {
+            try { // Level 3
+                UserData user = getUser(username); // Level 4 via getUser call
+                if (!BCrypt.checkpw(password, user.password())) {
                     throw new DataAccessException("Error: Wrong password");
                 }
                 String insertAuth = "REPLACE INTO auth (username, auth) VALUES (?, ?)";
-                try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
+                try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) { // Level 4
                     psAuth.setString(1, username);
                     psAuth.setString(2, authToken);
                     psAuth.executeUpdate();
@@ -92,7 +94,7 @@ public class MySqlUserDAO {
                 conn.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new DataAccessException("Database error.");
+            throw new DataAccessException("Connection error: " + e.getMessage());
         }
     }
 

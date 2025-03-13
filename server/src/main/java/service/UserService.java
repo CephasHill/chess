@@ -37,13 +37,8 @@ public class UserService {
             try {
                 dao.getUser(registerRequest.username());
             } catch (DataAccessException e) {
-                try {
-                    AuthData authData = dao.createUser(userData);
-                    return new RegisterResult(authData);
-                }
-                catch (SQLException e2) {
-                    throw new DataAccessException("Error: Username already exists");
-                }
+                AuthData authData = dao.createUser(userData);
+                return new RegisterResult(authData);
 
             }
             throw new DataAccessException("Error: Username already exists");

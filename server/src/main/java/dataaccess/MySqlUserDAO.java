@@ -4,6 +4,8 @@ import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
+import static dataaccess.DatabaseManager.authorize;
+import static dataaccess.DatabaseManager.getConnection;
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 import java.sql.Connection;
@@ -21,52 +23,70 @@ public class MySqlUserDAO {
     }
 
     public AuthData createUser(UserData u) throws DataAccessException, SQLException {
-        String authToken = generateAuth();
-        try (Connection conn = DatabaseManager.getConnection()) {
-            conn.setAutoCommit(false);
-            try {
-                String insertUser = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
-                try (PreparedStatement ps = conn.prepareStatement(insertUser)) {
-                    ps.setString(1, u.username());
-                    ps.setString(2, hashPassword(u.password()));
-                    ps.setString(3, u.email());
-                    ps.executeUpdate();
-                    String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
-                    try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
-                        psAuth.setString(1, u.username());
-                        psAuth.setString(2, authToken);
-                        psAuth.executeUpdate();
-                    }
-                }
-                conn.commit();
-            } catch (Exception e) {
-                conn.rollback();
-                if (e instanceof SQLException && ((SQLException) e).getErrorCode() == 1062) {
-                    throw new DataAccessException("Username or email already exists.");
-                }
-                throw new DataAccessException("Username or email already exists.");
-            } finally {
-                conn.setAutoCommit(true);
-            }
+        try {
+            getUser(u.username());
         }
-        return new AuthData(u.username(), authToken);
+        catch (Exception e) {
+            String authToken = generateAuth();
+            try (Connection conn = getConnection()) {
+                conn.setAutoCommit(false);
+                try {
+                    String insertUser = "INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)";
+                    try (PreparedStatement ps = conn.prepareStatement(insertUser)) {
+                        ps.setString(1, u.username());
+                        ps.setString(2, hashPassword(u.password()));
+                        ps.setString(3, u.email());
+                        ps.executeUpdate();
+                        String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
+                        try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
+                            psAuth.setString(1, u.username());
+                            psAuth.setString(2, authToken);
+                            psAuth.executeUpdate();
+                        }
+                    }
+                    conn.commit();
+                } catch (Exception e2) {
+                    conn.rollback();
+                    if (e2 instanceof SQLException && ((SQLException) e2).getErrorCode() == 1062) {
+                        throw new DataAccessException("Username or email already exists.");
+                    }
+                    throw new DataAccessException("Username or email already exists.");
+                } finally {
+                    conn.setAutoCommit(true);
+                }
+            }
+            return new AuthData(u.username(), authToken);
+        }
+        throw new DataAccessException("Username already exists.");
     }
 
     public AuthData loginUser(String username, String password) throws DataAccessException {
+        String authToken = generateAuth();
         try {
             getUser(username);
+        } catch (Exception e) {
+            throw new DataAccessException("Error: User not found.");
         }
-        catch (Exception e) {
-            throw new DataAccessException(e.getMessage());
+        String query = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            ps.setString(2, hashPassword(password));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new DataAccessException("Error: Password does not match.");
+                }
+            }
+            String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
+            try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
+                psAuth.setString(1, username);
+                psAuth.setString(2, generateAuth());
+                psAuth.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Database error.");
         }
-        if (database.userMap.get(username).getLeft().equals(password)) {
-            String auth = generateAuth();
-            database.authMap.put(auth, username);
-            return new AuthData(username,auth);
-        }
-        else {
-            throw new DataAccessException("Error: Wrong password");
-        }
+        return new AuthData(username, authToken);
     }
 
     private String generateAuth() {
@@ -74,22 +94,29 @@ public class MySqlUserDAO {
     }
 
     public void getUser(String username) throws DataAccessException {
-        String statement = "SELECT username, userData FROM users WHERE username = ?";
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1,username);
-                var rs = preparedStatement.executeQuery(statement);
+        String query = "SELECT * FROM auth WHERE username = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setString(1, username);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    throw new DataAccessException("Username already exists.");
+                }
             }
-        }
-        catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+        } catch (SQLException e) {
+            throw new DataAccessException("Database error: " + e.getMessage());
         }
     }
 
     public void logout(String authToken) throws DataAccessException {
-        if (!database.authMap.containsKey(authToken)) {
-            throw new DataAccessException("Error: AuthToken not found");
+        authorize(authToken);
+        String statement = "DELETE FROM auth WHERE auth = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement ps = conn.prepareStatement(statement)) {
+            ps.setString(1, authToken);
+            ps.executeUpdate(statement);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
-        database.authMap.remove(authToken);
     }
 }

@@ -4,10 +4,15 @@ import chess.ChessGame;
 import model.GameData;
 
 import javax.xml.crypto.Data;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static dataaccess.DatabaseManager.authorize;
+import static dataaccess.DatabaseManager.getConnection;
 import static server.Server.database;
 
 public class MySqlGameDAO {
@@ -35,11 +40,6 @@ public class MySqlGameDAO {
     private int generateID() {
         Random random = new Random();
         return 1000 + random.nextInt(9000);
-    }
-    void authorize(String authToken) throws DataAccessException {
-        if (!database.authMap.containsKey(authToken)) {
-            throw new DataAccessException("Error: Unauthorized");
-        }
     }
 
     public void join(String color, int id, String authToken) throws DataAccessException {
@@ -73,6 +73,7 @@ public class MySqlGameDAO {
             throw new DataAccessException("Error: Unacceptable color");
         }
     }
+
     public void executeUpdate(String statement) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var preparedStatement = conn.prepareStatement(statement)) {

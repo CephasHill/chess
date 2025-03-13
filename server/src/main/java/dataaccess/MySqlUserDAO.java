@@ -89,7 +89,7 @@ public class MySqlUserDAO {
                 String insertAuth = "REPLACE INTO auth (username, auth) VALUES (?, ?)";
                 try (PreparedStatement psAuth = conn.prepareStatement(insertAuth)) {
                     psAuth.setString(1, username);
-                    psAuth.setString(2, generateAuth());
+                    psAuth.setString(2, authToken);
                     psAuth.executeUpdate();
                 }
                 conn.commit();

@@ -114,7 +114,7 @@ public class MySqlUserDAO {
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(statement)) {
             ps.setString(1, authToken);
-            ps.executeUpdate(statement);
+            ps.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

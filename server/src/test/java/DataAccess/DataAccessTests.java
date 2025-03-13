@@ -3,6 +3,7 @@ package DataAccess;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.MySqlUserDAO;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import java.sql.*;
@@ -91,6 +92,60 @@ public class DataAccessTests {
                     "Should throw SQLException for duplicate username");
         } catch (Exception e) {
             fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testLogoutSuccess() throws Exception {
+        // Test successful registration
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO dao = new MySqlUserDAO();
+        AuthData a = dao.createUser(new UserData(username, password, email));
+        dao.logout(a.authToken());
+        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD);
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth WHERE username = (SELECT username FROM users WHERE username = ?)")) {
+            ps.setString(1, username);
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertFalse(rs.next(), "Auth entry should not exist");
+            }
+        }
+    }
+    @Test
+    public void testLogoutFail() throws Exception {
+        // Test successful registration
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO dao = new MySqlUserDAO();
+        AuthData a = dao.createUser(new UserData(username, password, email));
+        try {
+            dao.logout("dummy");
+            fail("Should throw SQLException");
+        }
+        catch (DataAccessException e) {
+            assertNotNull(e);
+        }
+    }
+    @Test
+    public void testLoginSuccess() throws Exception {
+        // Test successful registration
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO dao = new MySqlUserDAO();
+        AuthData a = dao.createUser(new UserData(username, password, email));
+        dao.logout(a.authToken());
+        dao.loginUser(username, password);
+        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD);
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth WHERE username = (SELECT username FROM users WHERE username = ?)")) {
+            ps.setString(1, username);
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next(), "Auth entry should exist");
+            }
         }
     }
 }

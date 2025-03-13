@@ -67,14 +67,18 @@ public class MySqlUserDAO {
         } catch (Exception e) {
             throw new DataAccessException("Error: User not found.");
         }
-        String query = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
+        String query = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, username);
-            ps.setString(2, hashPassword(password));
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new DataAccessException("Error: Password does not match.");
+                if (rs.next()) {
+                    String storedHash = rs.getString("password_hash");
+                    if (!BCrypt.checkpw(password, storedHash)) {
+                        throw new DataAccessException("Error: Password does not match.");
+                    }
+                } else {
+                    throw new DataAccessException("Error: Username not found.");
                 }
             }
             String insertAuth = "INSERT INTO auth (username, auth) VALUES (?, ?)";
@@ -94,7 +98,7 @@ public class MySqlUserDAO {
     }
 
     public void getUser(String username) throws DataAccessException {
-        String query = "SELECT * FROM auth WHERE username = ?";
+        String query = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, username);

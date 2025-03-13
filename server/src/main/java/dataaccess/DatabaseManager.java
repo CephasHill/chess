@@ -45,8 +45,9 @@ public class DatabaseManager {
         return DATABASE_NAME;
     }
 
-    public static void authorize(String authToken) throws DataAccessException {
+    public static String authorize(String authToken) throws DataAccessException {
         String query = "SELECT * FROM auth WHERE auth = ?";
+        String user;
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, authToken);
@@ -54,10 +55,12 @@ public class DatabaseManager {
                 if (!rs.next()) {
                     throw new DataAccessException("Error: Auth does not exist.");
                 }
+                user = rs.getString("user");
             }
         } catch (SQLException e) {
             throw new DataAccessException("Database error: " + e.getMessage());
         }
+        return user;
     }
 
 

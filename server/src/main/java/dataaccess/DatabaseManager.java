@@ -32,6 +32,19 @@ public class DatabaseManager {
             throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
         }
     }
+    public String getConnectionUrl() {
+        return CONNECTION_URL;
+    }
+    public String getConnectionUser() {
+        return USER;
+    }
+    public String getConnectionPassword() {
+        return PASSWORD;
+    }
+    public String getDatabaseName() {
+        return DATABASE_NAME;
+    }
+
 
     /**
      * Creates the database if it does not already exist.
@@ -48,6 +61,43 @@ public class DatabaseManager {
         }
     }
 
+    public static void initializeDatabase() throws SQLException {
+        String createUsersTable = """
+                CREATE TABLE IF NOT EXISTS users (
+                    username VARCHAR(256) UNIQUE NOT NULL,
+                    password_hash VARCHAR(256) UNIQUE NOT NULL,
+                    email VARCHAR(256) UNIQUE NOT NULL
+                );""";
+        String createAuthTable = """
+                CREATE TABLE IF NOT EXISTS auth (
+                    username VARCHAR(256) PRIMARY KEY,
+                    auth VARCHAR(256) NOT NULL
+                );""";
+        String createGamesTable = """
+                CREATE TABLE IF NOT EXISTS games (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    whiteUsername VARCHAR(256) NOT NULL,
+                    blackUsername VARCHAR(256) NOT NULL,
+                    gameName VARCHAR(256) NOT NULL,
+                    chessGame JSON NOT NULL
+                );""";
+        try (Connection conn = getConnection();
+            Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(createUsersTable);
+            stmt.executeUpdate(createAuthTable);
+            stmt.executeUpdate(createGamesTable);
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+            initializeDatabase();
+            System.out.println("Database initialized successfully.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
@@ -60,13 +110,13 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    static Connection getConnection() throws SQLException {
         try {
             var conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
             conn.setCatalog(DATABASE_NAME);
             return conn;
         } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 }

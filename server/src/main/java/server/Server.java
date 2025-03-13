@@ -20,9 +20,9 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Server {
-    public static MemoryDatabase database = new MemoryDatabase();
+    public String storageType = "sql"; // "mem" or "sql"
 
-    public static String storageType = "mem"; // "mem" or "sql"
+    public static MemoryDatabase database = new MemoryDatabase();
 
     public static MemoryDatabase getDatabase() {
         return database;

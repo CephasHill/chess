@@ -12,6 +12,7 @@ import result.LoginResult;
 import result.LogoutResult;
 import result.RegisterResult;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 public class UserService {
@@ -36,8 +37,14 @@ public class UserService {
             try {
                 dao.getUser(registerRequest.username());
             } catch (DataAccessException e) {
-                AuthData authData = dao.createUser(userData);
-                return new RegisterResult(authData);
+                try {
+                    AuthData authData = dao.createUser(userData);
+                    return new RegisterResult(authData);
+                }
+                catch (SQLException e2) {
+                    throw new DataAccessException("Error: Username already exists");
+                }
+
             }
             throw new DataAccessException("Error: Username already exists");
         }

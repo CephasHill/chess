@@ -53,41 +53,33 @@ public class MySqlGameDAO {
     public ArrayList<GameData> listGames(String authToken) throws DataAccessException {
         authorize(authToken);
         ArrayList<GameData> games = new ArrayList<>();
-        for (int g : database.gameMap.keySet()) {
-            games.add(database.gameMap.get(g));
+        String query = "SELECT id, whiteUsername, blackUsername, gameName, chessGame FROM games";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(query);
+             ResultSet rs = ps.executeQuery()) {
+            Gson gson = new Gson();
+            while (rs.next()) {
+                int gameID = rs.getInt("id");
+                String whiteUsername = rs.getString("whiteUsername");
+                String blackUsername = rs.getString("blackUsername");
+                String gameName = rs.getString("gameName");
+                String json = rs.getString("chessGame");
+                ChessGame game = gson.fromJson(json, ChessGame.class);
+                games.add(new GameData(gameID, whiteUsername, blackUsername, gameName, game));
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error: Failed to list games: " + e.getMessage());
         }
         return games;
     }
 
     public void join(String color, int id, String authToken) throws DataAccessException {
         authorize(authToken);
-        if (!database.gameMap.containsKey(id)) {
-            throw new DataAccessException("Error: Unacceptable gameID");
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            throw new DataAccessException("Failed to join game: " + e.getMessage());
         }
-        GameData ogData = database.gameMap.get(id);
-        if (color == null) {
-            throw new DataAccessException("Error: Unacceptable color");
-        }
-        if (color.equalsIgnoreCase("white")) {
-            if (ogData.whiteUsername() == null) {
-                String username = database.authMap.get(authToken);
-                database.gameMap.put(id, new GameData(id, username, ogData.blackUsername(), ogData.gameName(), ogData.game()));
-            }
-            else {
-                throw new DataAccessException("Error: Unavailable");
-            }
-        }
-        else if (color.equalsIgnoreCase("black")) {
-            if (ogData.blackUsername() == null) {
-                String username = database.authMap.get(authToken);
-                database.gameMap.put(id, new GameData(id, ogData.whiteUsername(), username, ogData.gameName(), ogData.game()));
-            }
-            else {
-                throw new DataAccessException("Error: Unavailable");
-            }
-        }
-        else {
-            throw new DataAccessException("Error: Unacceptable color");
-        }
+
     }
 }

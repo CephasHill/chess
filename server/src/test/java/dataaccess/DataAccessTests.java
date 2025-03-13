@@ -1,9 +1,11 @@
 package dataaccess;
 
 import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import java.sql.*;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -31,6 +33,7 @@ public class DataAccessTests {
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DELETE FROM auth");
             stmt.executeUpdate("DELETE FROM users");
+            stmt.executeUpdate("DELETE FROM games");
         }
     }
 
@@ -215,14 +218,38 @@ public class DataAccessTests {
         MySqlUserDAO userDao = new MySqlUserDAO();
         AuthData a = userDao.createUser(new UserData(username, password, email));
         MySqlGameDAO gameDao = new MySqlGameDAO();
-        gameDao.createGame("game name", a.authToken());
-        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD);
-             PreparedStatement ps = conn.prepareStatement("SELECT * FROM games WHERE gameName = ?")) {
-            ps.setString(1, "game name");
-            ps.executeQuery();
-            try (ResultSet rs = ps.executeQuery()) {
-                assertTrue(rs.next(), "Game entry should exist");
-            }
+        try {
+            gameDao.createGame("game name", "bad authToken");
+            fail("Should throw SQLException");
+        }
+        catch (DataAccessException e) {
+            assertNotNull(e);
+        }
+    }
+    @Test
+    public void testListGamesSuccess() throws Exception {
+        MySqlUserDAO userDao = new MySqlUserDAO();
+        AuthData auth = userDao.createUser(new UserData("testuser", "password123", "test@example.com"));
+        MySqlGameDAO gameDao = new MySqlGameDAO();
+
+        gameDao.createGame("Game1", auth.authToken());
+        gameDao.createGame("Game2", auth.authToken());
+
+        ArrayList<GameData> games = gameDao.listGames(auth.authToken());
+        assertEquals(2, games.size(), "Should return 2 games");
+        assertTrue(games.stream().anyMatch(g -> "Game1".equals(g.gameName())), "Game1 should exist");
+        assertTrue(games.stream().anyMatch(g -> "Game2".equals(g.gameName())), "Game2 should exist");
+    }
+    @Test
+    public void testListGamesFail() throws Exception {
+        MySqlUserDAO userDao = new MySqlUserDAO();
+        AuthData auth = userDao.createUser(new UserData("testuser", "password123", "test@example.com"));
+        MySqlGameDAO gameDao = new MySqlGameDAO();
+        try {
+            gameDao.createGame("Game2", "bad authToken");
+            fail("Should throw SQLException");
+        } catch (DataAccessException e) {
+            assertNotNull(e);
         }
     }
 }

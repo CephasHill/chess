@@ -4,19 +4,14 @@ import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.crypto.Data;
-
 import static dataaccess.DatabaseManager.authorize;
 import static dataaccess.DatabaseManager.getConnection;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
-
-import static server.Server.database;
 
 public class MySqlUserDAO {
 
@@ -64,14 +59,10 @@ public class MySqlUserDAO {
 
     public AuthData loginUser(String username, String password) throws DataAccessException {
         String authToken = generateAuth();
-        try {
-            getUser(username);
-        } catch (Exception e) {
-            throw new DataAccessException("Error: User not found");
-        }
         try (Connection conn = DatabaseManager.getConnection()) {
             conn.setAutoCommit(false);
             try {
+                UserData user = getUser(username);
                 String query = "SELECT password_hash FROM users WHERE username = ?";
                 String storedHash;
                 try (PreparedStatement ps = conn.prepareStatement(query)) {
@@ -109,15 +100,16 @@ public class MySqlUserDAO {
         return UUID.randomUUID().toString();
     }
 
-    public void getUser(String username) throws DataAccessException {
-        String query = "SELECT * FROM users WHERE username = ?";
+    public UserData getUser(String username) throws DataAccessException {
+        String query = "SELECT username, password_hash, email FROM users WHERE username = ?";
         try (Connection conn = getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) {
-                    throw new DataAccessException("Username already exists.");
+                if (rs.next()) {
+                    return new UserData(rs.getString("username"), rs.getString("password_hash"), rs.getString("email"));
                 }
+                throw new DataAccessException("Error: User not found");
             }
         } catch (SQLException e) {
             throw new DataAccessException("Database error: " + e.getMessage());

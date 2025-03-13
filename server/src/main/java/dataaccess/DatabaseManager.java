@@ -88,8 +88,9 @@ public class DatabaseManager {
                 );""";
         String createAuthTable = """
                 CREATE TABLE IF NOT EXISTS auth (
-                    username VARCHAR(256) PRIMARY KEY,
-                    auth VARCHAR(256) NOT NULL
+                    username VARCHAR(256) NOT NULL,
+                    auth VARCHAR(256) PRIMARY KEY,
+                    FOREIGN KEY (username) REFERENCES users(username)
                 );""";
         String createGamesTable = """
                 CREATE TABLE IF NOT EXISTS games (

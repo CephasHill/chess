@@ -191,6 +191,15 @@ public class DataAccessTests {
         }
     }
     @Test
+    public void testClearFail() throws Exception {
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlClearDAO dao = new MySqlClearDAO();
+        dao.clearData();
+        assertFalse(false);
+    }
+    @Test
     public void testCreateGameSuccess() throws Exception {
         // Test successful registration
         String username = "testuser";

@@ -2,6 +2,7 @@ package DataAccess;
 
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
+import dataaccess.MySqlClearDAO;
 import dataaccess.MySqlUserDAO;
 import model.AuthData;
 import model.UserData;
@@ -145,6 +146,48 @@ public class DataAccessTests {
             ps.executeQuery();
             try (ResultSet rs = ps.executeQuery()) {
                 assertTrue(rs.next(), "Auth entry should exist");
+            }
+        }
+    }
+    @Test
+    public void testLoginFail() throws Exception {
+        // Test successful registration
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO dao = new MySqlUserDAO();
+        AuthData a = dao.createUser(new UserData(username, password, email));
+        dao.logout(a.authToken());
+        try {
+            dao.loginUser(username, "wrongPassword");
+            fail("Should throw SQLException");
+        }
+        catch (DataAccessException e) {
+            assertNotNull(e);
+        }
+    }
+    @Test
+    public void testClearSuccess() throws Exception {
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlClearDAO dao = new MySqlClearDAO();
+        dao.clearData();
+        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD)) {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth");
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertFalse(rs.next(), "Data entry should not exist");
+            }
+            ps = conn.prepareStatement("SELECT * FROM users");
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertFalse(rs.next(), "Data entry should not exist");
+            }
+            ps = conn.prepareStatement("SELECT * FROM games");
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertFalse(rs.next(), "Auth entry should not exist");
             }
         }
     }

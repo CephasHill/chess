@@ -10,11 +10,11 @@ import static server.Server.database;
 public class MySqlClearDAO {
 
     public void clearData() throws SQLException {
-        DatabaseManager dbm = new DatabaseManager();
-        try (Connection conn = DriverManager.getConnection(dbm.getConnectionUrl(), dbm.getConnectionUser(), dbm.getConnectionPassword());
+        try (Connection conn = DatabaseManager.getConnection(); // Use existing method
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DELETE FROM auth");
             stmt.executeUpdate("DELETE FROM users");
+            stmt.executeUpdate("DELETE FROM games");
         }
     }
 }

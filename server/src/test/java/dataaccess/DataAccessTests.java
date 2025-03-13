@@ -252,4 +252,41 @@ public class DataAccessTests {
             assertNotNull(e);
         }
     }
+    @Test
+    public void testJoinGameSuccess() throws Exception {
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO userDao = new MySqlUserDAO();
+        AuthData a = userDao.createUser(new UserData(username, password, email));
+        MySqlGameDAO gameDao = new MySqlGameDAO();
+        GameData g = gameDao.createGame("game name", a.authToken());
+        gameDao.join("white", g.gameID(), a.authToken());
+        try (Connection conn = DriverManager.getConnection(TEST_DB_URL, USER, PASSWORD);
+             PreparedStatement ps = conn.prepareStatement("SELECT * FROM games WHERE gameName = ? && id = ?")) {
+            ps.setString(1, "game name");
+            ps.setInt(2, g.gameID());
+            ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next(), "Game entry should exist");
+            }
+        }
+    }
+    @Test
+    public void testJoinGameFail() throws Exception {
+        String username = "testuser";
+        String email = "test@example.com";
+        String password = "password123";
+        MySqlUserDAO userDao = new MySqlUserDAO();
+        AuthData a = userDao.createUser(new UserData(username, password, email));
+        MySqlGameDAO gameDao = new MySqlGameDAO();
+        try {
+            GameData g = gameDao.createGame("game name", a.authToken());
+            gameDao.join("green", g.gameID(), a.authToken());
+            fail("Should throw SQLException");
+        }
+        catch (DataAccessException e) {
+            assertNotNull(e);
+        }
+    }
 }

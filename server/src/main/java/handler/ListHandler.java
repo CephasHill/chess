@@ -2,7 +2,7 @@ package handler;
 
 import dataaccess.DataAccessException;
 import model.GameData;
-import request.ListGamesRequest;
+import model.request.ListGamesRequest;
 import service.GameService;
 
 import java.util.ArrayList;

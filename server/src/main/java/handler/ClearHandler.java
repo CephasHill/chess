@@ -1,6 +1,6 @@
 package handler;
 
-import request.DeleteRequest;
+import model.request.DeleteRequest;
 import service.ClearService;
 
 public class ClearHandler {

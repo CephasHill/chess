@@ -8,12 +8,12 @@ import handler.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import request.CreateGameRequest;
-import request.JoinGameRequest;
-import request.ListGamesRequest;
-import result.CreateGameResult;
-import result.LoginResult;
-import result.RegisterResult;
+import model.request.CreateGameRequest;
+import model.request.JoinGameRequest;
+import model.request.ListGamesRequest;
+import model.result.CreateGameResult;
+import model.result.LoginResult;
+import model.result.RegisterResult;
 import spark.*;
 
 import java.sql.SQLException;

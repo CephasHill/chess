@@ -1,7 +1,7 @@
 package handler;
 
 import dataaccess.DataAccessException;
-import request.JoinGameRequest;
+import model.request.JoinGameRequest;
 import service.GameService;
 
 public class JoinHandler {

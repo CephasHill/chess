@@ -1,9 +1,12 @@
 package service;
 
 import dataaccess.DataAccessException;
+import model.request.DeleteRequest;
+import model.request.LoginRequest;
+import model.request.LogoutRequest;
+import model.request.RegisterRequest;
+import model.result.*;
 import org.junit.jupiter.api.*;
-import request.*;
-import result.*;
 
 import java.util.ArrayList;
 

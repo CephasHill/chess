@@ -2,8 +2,8 @@ package handler;
 
 import dataaccess.DataAccessException;
 import model.UserData;
-import request.LoginRequest;
-import result.LoginResult;
+import model.request.LoginRequest;
+import model.result.LoginResult;
 import service.UserService;
 
 public class LoginHandler {

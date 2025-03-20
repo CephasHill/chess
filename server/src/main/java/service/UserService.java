@@ -5,14 +5,13 @@ import dataaccess.MemoryUserDataDAO;
 import dataaccess.MySqlUserDAO;
 import model.AuthData;
 import model.UserData;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
-import result.LoginResult;
-import result.LogoutResult;
-import result.RegisterResult;
+import model.request.LoginRequest;
+import model.request.LogoutRequest;
+import model.request.RegisterRequest;
+import model.result.LoginResult;
+import model.result.LogoutResult;
+import model.result.RegisterResult;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 public class UserService {

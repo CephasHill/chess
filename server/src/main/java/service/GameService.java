@@ -4,9 +4,9 @@ import dataaccess.DataAccessException;
 import dataaccess.MemoryGameDataDAO;
 import dataaccess.MySqlGameDAO;
 import model.GameData;
-import result.CreateGameResult;
-import result.JoinGameResult;
-import result.ListGamesResult;
+import model.result.CreateGameResult;
+import model.result.JoinGameResult;
+import model.result.ListGamesResult;
 
 import java.util.ArrayList;
 

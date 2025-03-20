@@ -1,8 +1,8 @@
 package handler;
 
 import dataaccess.DataAccessException;
-import request.RegisterRequest;
-import result.RegisterResult;
+import model.request.RegisterRequest;
+import model.result.RegisterResult;
 import service.UserService;
 
 public class RegisterHandler {

@@ -1,7 +1,7 @@
 package handler;
 
 import dataaccess.DataAccessException;
-import request.LogoutRequest;
+import model.request.LogoutRequest;
 import service.UserService;
 
 public class LogoutHandler {

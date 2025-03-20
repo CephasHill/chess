@@ -1,8 +1,8 @@
 package handler;
 
 import dataaccess.DataAccessException;
-import request.CreateGameRequest;
-import result.CreateGameResult;
+import model.request.CreateGameRequest;
+import model.result.CreateGameResult;
 import service.GameService;
 
 public class CreateHandler {

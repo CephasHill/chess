@@ -2,7 +2,7 @@ package service;
 
 import dataaccess.MemoryClearDataDAO;
 import dataaccess.MySqlClearDAO;
-import request.DeleteRequest;
+import model.request.DeleteRequest;
 
 public class ClearService {
     public void clearAll(DeleteRequest request) {

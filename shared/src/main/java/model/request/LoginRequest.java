@@ -1,4 +1,4 @@
-package request;
+package model.request;
 
 public record LoginRequest(String username, String password, String storageType) {
 }

@@ -19,24 +19,35 @@ public class ServerFacade {
     public ServerFacade(String url) {
         serverUrl = url;
     }
-    public RegisterResult register(RegisterRequest req) {
-        return null;
+    public RegisterResult register(RegisterRequest req) throws ResponseException {
+        var path = "/user";
+        return this.makeRequest("POST", path, req, RegisterResult.class);
     }
-    public LoginResult login(LoginRequest req) {
-        return null;
+    public LoginResult login(LoginRequest req) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("POST", path, req, LoginResult.class);
     }
-    public LogoutResult logout(LoginRequest req) {
-        return null;
+    public LogoutResult logout(LoginRequest req) throws ResponseException {
+        var path = "/session";
+        return this.makeRequest("DELETE", path, req, LogoutResult.class);
     }
-    public CreateGameResult createGame(CreateGameRequest req) {
-        return null;
+    public CreateGameResult createGame(CreateGameRequest req) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("POST", path, req, CreateGameResult.class);
     }
-    public ListGamesResult listGames(ListGamesRequest req) {
-        return null;
+    public ListGamesResult listGames(ListGamesRequest req) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("GET", path, req, ListGamesResult.class);
     }
-    public JoinGameResult joinGame(JoinGameRequest req) {
-        return null;
+    public JoinGameResult joinGame(JoinGameRequest req) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("PUT", path, req, JoinGameResult.class);
     }
+    public DeleteResult clearGames(DeleteRequest req) throws ResponseException {
+        var path = "/db";
+        return this.makeRequest("DELETE", path, req, DeleteResult.class);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();

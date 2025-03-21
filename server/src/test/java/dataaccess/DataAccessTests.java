@@ -5,7 +5,6 @@ import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
@@ -15,11 +14,10 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTests {
-    private static String DATABASE_NAME = "";
-    private static String USER = "";
-    private static String PASSWORD = "";
-    private static String CONNECTION_URL = "";
-    private static final DatabaseManager DATABASE_MANAGER = new DatabaseManager();
+    private static String dbUser = "";
+    private static String dbPassword = "";
+    private static String dbConnectionUrl = "";
+    private static final DatabaseManager databaseManager = new DatabaseManager();
 
     public DataAccessTests() {
         Properties properties = new Properties();
@@ -31,22 +29,22 @@ public class DataAccessTests {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        DATABASE_NAME = properties.getProperty("db.name");
-        USER = properties.getProperty("db.user");
-        PASSWORD = properties.getProperty("db.password");
+        String dbName = properties.getProperty("db.name");
+        dbUser = properties.getProperty("db.user");
+        dbPassword = properties.getProperty("db.password");
         var host = properties.getProperty("db.host");
         var port = Integer.parseInt(properties.getProperty("db.port"));
-        CONNECTION_URL = String.format("jdbc:mysql://%s:%d/%s", host, port, DATABASE_NAME);
+        dbConnectionUrl = String.format("jdbc:mysql://%s:%d/%s", host, port, dbName);
     }
 
     @BeforeAll
     public static void setupDatabase() throws SQLException {
-        try (Connection conn = DriverManager.getConnection(DATABASE_MANAGER.getConnectionUrl(),
-                DATABASE_MANAGER.getConnectionUser(),
-                DATABASE_MANAGER.getConnectionPassword());
+        try (Connection conn = DriverManager.getConnection(databaseManager.getConnectionUrl(),
+                databaseManager.getConnectionUser(),
+                databaseManager.getConnectionPassword());
              Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DATABASE_MANAGER.getDatabaseName());
-            stmt.executeUpdate("USE " + DATABASE_MANAGER.getDatabaseName());
+            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + databaseManager.getDatabaseName());
+            stmt.executeUpdate("USE " + databaseManager.getDatabaseName());
             DatabaseManager.initializeDatabase(); // Creates tables
         }
     }
@@ -54,7 +52,7 @@ public class DataAccessTests {
     @BeforeEach
     public void clearDatabase() throws SQLException {
         // Clear tables before each test
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DELETE FROM auth");
             stmt.executeUpdate("DELETE FROM users");
@@ -65,7 +63,7 @@ public class DataAccessTests {
     @AfterAll
     public static void tearDownDatabase() throws SQLException {
         // Drop test database after all tests
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/", dbUser, dbPassword);
              Statement stmt = conn.createStatement()) {
             stmt.executeUpdate("DROP DATABASE IF EXISTS chess_db_test");
         }
@@ -81,7 +79,7 @@ public class DataAccessTests {
         dao.createUser(new UserData(username, password, email));
 
         // Verify user in database
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE username = ?")) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
@@ -92,7 +90,7 @@ public class DataAccessTests {
         }
 
         // Verify auth in database
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth WHERE username = (SELECT username FROM users WHERE username = ?)")) {
             ps.setString(1, username);
             try (ResultSet rs = ps.executeQuery()) {
@@ -129,7 +127,7 @@ public class DataAccessTests {
         MySqlUserDAO dao = new MySqlUserDAO();
         AuthData a = dao.createUser(new UserData(username, password, email));
         dao.logout(a.authToken());
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth WHERE username = (SELECT username FROM users WHERE username = ?)")) {
             ps.setString(1, username);
             ps.executeQuery();
@@ -164,7 +162,7 @@ public class DataAccessTests {
         AuthData a = dao.createUser(new UserData(username, password, email));
         dao.logout(a.authToken());
         dao.loginUser(username, password);
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth WHERE username = (SELECT username FROM users WHERE username = ?)")) {
             ps.setString(1, username);
             ps.executeQuery();
@@ -197,7 +195,7 @@ public class DataAccessTests {
         String password = "password123";
         MySqlClearDAO dao = new MySqlClearDAO();
         dao.clearData();
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD)) {
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword)) {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM auth");
             ps.executeQuery();
             try (ResultSet rs = ps.executeQuery()) {
@@ -234,7 +232,7 @@ public class DataAccessTests {
         AuthData a = userDao.createUser(new UserData(username, password, email));
         MySqlGameDAO gameDao = new MySqlGameDAO();
         gameDao.createGame("game name", a.authToken());
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM games WHERE gameName = ?")) {
             ps.setString(1, "game name");
             ps.executeQuery();
@@ -296,7 +294,7 @@ public class DataAccessTests {
         MySqlGameDAO gameDao = new MySqlGameDAO();
         GameData g = gameDao.createGame("game name", a.authToken());
         gameDao.join("white", g.gameID(), a.authToken());
-        try (Connection conn = DriverManager.getConnection(CONNECTION_URL, USER, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(dbConnectionUrl, dbUser, dbPassword);
              PreparedStatement ps = conn.prepareStatement("SELECT * FROM games WHERE gameName = ? && id = ?")) {
             ps.setString(1, "game name");
             ps.setInt(2, g.gameID());

@@ -4,6 +4,10 @@ import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -11,36 +15,28 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataAccessTests {
-
-    private static final String DATABASE_NAME;
-    private static final String USER;
-    private static final String PASSWORD;
-    private static final String CONNECTION_URL;
+    private static String DATABASE_NAME = "";
+    private static String USER = "";
+    private static String PASSWORD = "";
+    private static String CONNECTION_URL = "";
     private static final DatabaseManager DATABASE_MANAGER = new DatabaseManager();
 
-
-    /*
-     * Load the database information for the db.properties file.
-     */
-    static {
-        try {
-            try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
-                if (propStream == null) {
-                    throw new Exception("Unable to load db.properties");
-                }
-                Properties props = new Properties();
-                props.load(propStream);
-                DATABASE_NAME = props.getProperty("db.name");
-                USER = props.getProperty("db.user");
-                PASSWORD = props.getProperty("db.password");
-
-                var host = props.getProperty("db.host");
-                var port = Integer.parseInt(props.getProperty("db.port"));
-                CONNECTION_URL = String.format("jdbc:mysql://%s:%d", host, port) + "/" + DATABASE_NAME;
+    public DataAccessTests() {
+        Properties properties = new Properties();
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new IOException("Could not find resource 'db.properties'.");
             }
-        } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
+            properties.load(input);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        DATABASE_NAME = properties.getProperty("db.name");
+        USER = properties.getProperty("db.user");
+        PASSWORD = properties.getProperty("db.password");
+        var host = properties.getProperty("db.host");
+        var port = Integer.parseInt(properties.getProperty("db.port"));
+        CONNECTION_URL = String.format("jdbc:mysql://%s:%d/%s", host, port, DATABASE_NAME);
     }
 
     @BeforeAll

@@ -17,7 +17,7 @@ public class DataAccessTests {
     private static String dbUser = "";
     private static String dbPassword = "";
     private static String dbConnectionUrl = "";
-    private static final DatabaseManager databaseManager = new DatabaseManager();
+    private static final DatabaseManager DATABASE_MANAGER = new DatabaseManager();
 
     public DataAccessTests() {
         Properties properties = new Properties();
@@ -39,12 +39,12 @@ public class DataAccessTests {
 
     @BeforeAll
     public static void setupDatabase() throws SQLException {
-        try (Connection conn = DriverManager.getConnection(databaseManager.getConnectionUrl(),
-                databaseManager.getConnectionUser(),
-                databaseManager.getConnectionPassword());
+        try (Connection conn = DriverManager.getConnection(DATABASE_MANAGER.getConnectionUrl(),
+                DATABASE_MANAGER.getConnectionUser(),
+                DATABASE_MANAGER.getConnectionPassword());
              Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + databaseManager.getDatabaseName());
-            stmt.executeUpdate("USE " + databaseManager.getDatabaseName());
+            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DATABASE_MANAGER.getDatabaseName());
+            stmt.executeUpdate("USE " + DATABASE_MANAGER.getDatabaseName());
             DatabaseManager.initializeDatabase(); // Creates tables
         }
     }

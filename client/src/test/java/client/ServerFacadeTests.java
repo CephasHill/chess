@@ -40,7 +40,7 @@ public class ServerFacadeTests {
     }
     @Test
     void registerNeg() {
-        assertThrows(Exception.class, () -> facade.register(new RegisterRequest("username","password","email@email.com", storageType)));
+        assertThrows(Exception.class, () -> facade.register(new RegisterRequest(null,"password","email@email.com", storageType)));
     }
     @Test
     void loginPos() throws Exception {

@@ -86,4 +86,8 @@ public class ServerFacadeTests {
         var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
         assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.gameID(),auth, storageType)));
     }
+    @Test
+    void joinGameNeg() {
+        assertThrows(Exception.class, () -> facade.joinGame(new JoinGameRequest("WHITE",1,"badAuth",storageType)));
+    }
 }

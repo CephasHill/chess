@@ -44,8 +44,8 @@ public class ServerFacade {
         return makeRequest("GET", "/game", req, ListGamesResult.class);
     }
 
-    public JoinGameResult joinGame(JoinGameRequest req) throws ResponseException {
-        return makeRequest("PUT", "/game", req, JoinGameResult.class);
+    public void joinGame(JoinGameRequest req) throws ResponseException {
+        makeRequest("PUT", "/game", req, JoinGameResult.class);
     }
 
     public void clearDatabase(DeleteRequest req) throws ResponseException {

@@ -66,7 +66,7 @@ public class Server {
         try {
             handler.join(joinRequest);
             response.status(200);
-            return new JoinGameResult();
+            return gson.toJson(new JoinGameResult());
         } catch (DataAccessException e) {
             if (e.getMessage().equals("Error: Unavailable")) {
                 response.status(403);

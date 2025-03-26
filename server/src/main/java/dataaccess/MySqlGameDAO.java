@@ -130,12 +130,12 @@ public class MySqlGameDAO {
             if (whiteUsername != null) {
                 throw new DataAccessException("Error: Unavailable");
             }
-            return "UPDATE games SET whiteUsername = ? WHERE gameID = ?";
+            return "UPDATE games SET whiteUsername = ? WHERE id = ?";
         } else if ("black".equalsIgnoreCase(color)) {
             if (blackUsername != null) {
                 throw new DataAccessException("Error: Unavailable");
             }
-            return "UPDATE games SET blackUsername = ? WHERE gameID = ?";
+            return "UPDATE games SET blackUsername = ? WHERE id = ?";
         } else {
             throw new DataAccessException("Error: Unacceptable color");
         }

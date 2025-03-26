@@ -95,7 +95,7 @@ public class MySqlGameDAO {
                     ps.setInt(2, id);
                     int rowsAffected = ps.executeUpdate();
                     if (rowsAffected == 0) {
-                        throw new DataAccessException("Error: No games found with that id.");
+                        throw new DataAccessException("Error: No games found with that gameID.");
                     }
                 }
                 conn.commit();
@@ -130,12 +130,12 @@ public class MySqlGameDAO {
             if (whiteUsername != null) {
                 throw new DataAccessException("Error: Unavailable");
             }
-            return "UPDATE games SET whiteUsername = ? WHERE id = ?";
+            return "UPDATE games SET whiteUsername = ? WHERE gameID = ?";
         } else if ("black".equalsIgnoreCase(color)) {
             if (blackUsername != null) {
                 throw new DataAccessException("Error: Unavailable");
             }
-            return "UPDATE games SET blackUsername = ? WHERE id = ?";
+            return "UPDATE games SET blackUsername = ? WHERE gameID = ?";
         } else {
             throw new DataAccessException("Error: Unacceptable color");
         }

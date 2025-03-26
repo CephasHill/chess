@@ -5,7 +5,6 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.MemoryDatabase;
 import handler.*;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import model.request.CreateGameRequest;
@@ -120,7 +119,7 @@ public class Server {
         try {
             CreateGameResult result = handler.createGame(req);
             response.status(200);
-            return gson.toJson(Map.of("gameID", result.id()));
+            return gson.toJson(Map.of("gameID", result.gameID()));
         } catch (DataAccessException e) {
             response.status(401);
             return gson.toJson(Map.of("message", e.getMessage()));

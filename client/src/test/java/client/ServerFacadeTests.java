@@ -69,6 +69,13 @@ public class ServerFacadeTests {
         assertDoesNotThrow(() -> facade.createGame(new CreateGameRequest("gameName", auth, storageType)));
     }
     @Test
+    void createGameID() throws Exception {
+        var registerRes = facade.register(new RegisterRequest("username", "password", "email@email.com", storageType));
+        String auth = registerRes.authData().authToken();
+        var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
+        assertEquals(1,createRes.gameID());
+    }
+    @Test
     void createGameNeg() {
         assertThrows(Exception.class, () -> facade.createGame(new CreateGameRequest("gameName","badAuth",storageType)));
     }
@@ -77,6 +84,6 @@ public class ServerFacadeTests {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
         String auth = registerRes.authData().authToken();
         var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
-        assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.id(),auth, storageType)));
+        assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.gameID(),auth, storageType)));
     }
 }

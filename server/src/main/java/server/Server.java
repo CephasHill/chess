@@ -153,9 +153,8 @@ public class Server {
         LoginHandler handler = new LoginHandler();
         try {
             LoginResult result = handler.login(u, storageType);
-            AuthData a = new AuthData(result.username(),result.authToken());
             response.status(200);
-            return gson.toJson(a);
+            return gson.toJson(result);
         }
         catch (Exception e) {
             var message = e.getMessage();
@@ -195,8 +194,7 @@ public class Server {
             return gson.toJson(errorMap);
         }
         response.status(200);
-        AuthData a = handlerResult.authData();
-        return gson.toJson(a);
+        return gson.toJson(handlerResult);
     }
 
     public void stop() {

@@ -35,7 +35,7 @@ public class UserService {
             MySqlUserDAO dao = new MySqlUserDAO();
             try {
                 dao.getUser(registerRequest.username());
-            } catch (DataAccessException e) {
+            } catch (Exception e) {
                 AuthData authData = dao.createUser(userData);
                 return new RegisterResult(authData);
 

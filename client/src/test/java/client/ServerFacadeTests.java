@@ -6,6 +6,8 @@ import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -100,5 +102,13 @@ public class ServerFacadeTests {
         facade.createGame(new CreateGameRequest("game3", auth, storageType));
         var listRes = facade.listGames(new ListGamesRequest(auth, storageType));
         assertEquals(3, listRes.gamesList().size());
+    }
+    @Test
+    void listGamesNeg() {
+        assertThrows(Exception.class, () -> facade.listGames(new ListGamesRequest("badAuth",storageType)));
+    }
+    @Test
+    void clearDatabase() throws Exception {
+        assertDoesNotThrow(() -> facade.clearDatabase(new DeleteRequest(storageType)));
     }
 }

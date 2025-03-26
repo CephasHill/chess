@@ -20,6 +20,7 @@ public class PreLoginRepl {
             String line = scanner.nextLine();
             try {
                 result = client.eval(line);
+                System.out.print(BLUE + result);
             } catch (Exception e) {
 
             }

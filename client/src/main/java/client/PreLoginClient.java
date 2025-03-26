@@ -2,6 +2,7 @@ package client;
 
 import exception.ResponseException;
 import model.request.LoginRequest;
+import model.request.RegisterRequest;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -11,9 +12,10 @@ public class PreLoginClient {
     private final ServerFacade server;
     private final int port;
     private State state = State.SIGNEDOUT;
+    private String storageType = "sql";
     public PreLoginClient(int port, PreLoginRepl preLoginRepl) {
-        server = new ServerFacade(port);
         this.port = port;
+        server = new ServerFacade(port);
     }
 
     public String eval(String input) {
@@ -40,10 +42,10 @@ public class PreLoginClient {
         if (params.length >= 3) {
             username = String.join("-", params[0]);
             try {
-                server.login(new LoginRequest(params[0], params[1], params[2]));
-                state = state.SIGNEDIN;
+                server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
+                state = State.SIGNEDIN;
             } catch (ResponseException e) {
-                return e.getMessage();
+                return "Error: " + e.getMessage();
             }
             return String.format("You signed in as %s", username);
         }
@@ -51,7 +53,7 @@ public class PreLoginClient {
     }
 
     public String help() {
-        if (state == State.SIGNEDIN) {
+        if (state == State.SIGNEDOUT) {
             return """
                     - register <username, password, email>
                     - login <username password>

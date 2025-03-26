@@ -2,10 +2,10 @@ import client.PreLoginRepl;
 
 public class Main {
     public static void main(String[] args) {
-        var serverUrl = "http://localhost:8080";
+        int port = 0;
         if (args.length == 1) {
-            serverUrl = args[0];
+            port = Integer.parseInt(args[0]);
         }
-        new PreLoginRepl(serverUrl).run();
+        new PreLoginRepl(port).run();
     }
 }

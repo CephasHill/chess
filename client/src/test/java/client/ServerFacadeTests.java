@@ -60,12 +60,10 @@ public class ServerFacadeTests {
     @Test
     void logoutPos() throws Exception {
         var registerReq = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        facade.logout(new LogoutRequest(registerReq.authData().authToken(),storageType));
-        var res = facade.login(new LoginRequest("username","password",storageType));
-        assertTrue(res.authToken().length() > 10);
+        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(registerReq.authData().authToken(),storageType)));
     }
     @Test
     void logoutNeg() {
-        assertThrows(Exception.class, () -> facade.login(new LoginRequest("username","password",storageType)));
+        assertThrows(Exception.class, () -> facade.logout(new LogoutRequest("badAuth",storageType)));
     }
 }

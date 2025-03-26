@@ -1,5 +1,6 @@
 package client;
 
+import exception.ResponseException;
 import model.request.*;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -89,5 +90,15 @@ public class ServerFacadeTests {
     @Test
     void joinGameNeg() {
         assertThrows(Exception.class, () -> facade.joinGame(new JoinGameRequest("WHITE",1,"badAuth",storageType)));
+    }
+    @Test
+    void listGamesPos() throws Exception {
+        var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+        String auth = registerRes.authData().authToken();
+        facade.createGame(new CreateGameRequest("game1", auth, storageType));
+        facade.createGame(new CreateGameRequest("game2", auth, storageType));
+        facade.createGame(new CreateGameRequest("game3", auth, storageType));
+        var listRes = facade.listGames(new ListGamesRequest(auth, storageType));
+        assertEquals(3, listRes.gamesList().size());
     }
 }

@@ -12,6 +12,7 @@ import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.ListGamesRequest;
 import model.result.CreateGameResult;
+import model.result.JoinGameResult;
 import model.result.LoginResult;
 import model.result.RegisterResult;
 import spark.*;
@@ -66,7 +67,7 @@ public class Server {
         try {
             handler.join(joinRequest);
             response.status(200);
-            return "";
+            return new JoinGameResult();
         } catch (DataAccessException e) {
             if (e.getMessage().equals("Error: Unavailable")) {
                 response.status(403);

@@ -1,9 +1,6 @@
 package client;
 
-import model.request.DeleteRequest;
-import model.request.LoginRequest;
-import model.request.LogoutRequest;
-import model.request.RegisterRequest;
+import model.request.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 import server.ServerFacade;
@@ -42,14 +39,13 @@ public class ServerFacadeTests {
         assertTrue(registerResult.authData().authToken().length() > 10);
     }
     @Test
-    void registerNeg() throws Exception {
-        var registerResult = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+    void registerNeg() {
         assertThrows(Exception.class, () -> facade.register(new RegisterRequest("username","password","email@email.com", storageType)));
     }
     @Test
     void loginPos() throws Exception {
-        var registerReq = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        facade.logout(new LogoutRequest(registerReq.authData().authToken(),storageType));
+        var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+        facade.logout(new LogoutRequest(registerRes.authData().authToken(),storageType));
         var res = facade.login(new LoginRequest("username","password",storageType));
         assertTrue(res.authToken().length() > 10);
     }
@@ -59,11 +55,28 @@ public class ServerFacadeTests {
     }
     @Test
     void logoutPos() throws Exception {
-        var registerReq = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(registerReq.authData().authToken(),storageType)));
+        var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(registerRes.authData().authToken(),storageType)));
     }
     @Test
     void logoutNeg() {
         assertThrows(Exception.class, () -> facade.logout(new LogoutRequest("badAuth",storageType)));
+    }
+    @Test
+    void createGamePos() throws Exception {
+        var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+        String auth = registerRes.authData().authToken();
+        assertDoesNotThrow(() -> facade.createGame(new CreateGameRequest("gameName", auth, storageType)));
+    }
+    @Test
+    void createGameNeg() {
+        assertThrows(Exception.class, () -> facade.createGame(new CreateGameRequest("gameName","badAuth",storageType)));
+    }
+    @Test
+    void joinGamePos() throws Exception {
+        var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
+        String auth = registerRes.authData().authToken();
+        var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
+        assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.id(),auth, storageType)));
     }
 }

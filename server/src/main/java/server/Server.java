@@ -10,10 +10,7 @@ import model.UserData;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.ListGamesRequest;
-import model.result.CreateGameResult;
-import model.result.JoinGameResult;
-import model.result.LoginResult;
-import model.result.RegisterResult;
+import model.result.*;
 import spark.*;
 
 import java.sql.SQLException;
@@ -99,7 +96,7 @@ public class Server {
         try {
             ArrayList<GameData> result = handler.listGames(req);
             response.status(200);
-            return gson.toJson(Map.of("games", result));
+            return gson.toJson(new ListGamesResult(result));
         } catch (DataAccessException e) {
             response.status(401);
             return gson.toJson(Map.of("message",e.getMessage()));

@@ -25,12 +25,7 @@ public class PreLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "register" -> register(params);
-//                case "login" -> login(params);
-//                case "logout" -> logout(params);
-//                case "list" -> listGames(params);
-//                case "join" -> joinGame(params);
-//                case "create" -> createGame(params);
-                case "help" -> help();
+                case "login" -> login(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -52,27 +47,27 @@ public class PreLoginClient {
         throw new ResponseException(400, "Excpected: <username password email>");
     }
 
-    public String help() {
-        if (state == State.SIGNEDOUT) {
-            return """
-                    - register <username, password, email>
-                    - login <username password>
-                    - help
-                    - quit
-                    """;
+    public String login(String... params) throws ResponseException {
+        if (params.length >= 2) {
+            username = String.join("-", params[0]);
+            try {
+                server.login(new LoginRequest(params[0], params[1], storageType));
+                state = State.SIGNEDIN;
+            } catch (ResponseException e) {
+                return "Error: " + e.getMessage();
+            }
+            return String.format("You logged in as %s", username);
         }
-        return """
-                - list
-                - logout
-                - join
-                - create
-                - quit
-                """;
+        throw new ResponseException(400, "Excpected: <username password>");
     }
 
-    private void assertSignedIn() throws ResponseException {
-        if (state == State.SIGNEDOUT) {
-            throw new ResponseException(400, "You must sign in");
-        }
+    public String help() {
+        return """
+                The following are valid commands:
+                - register <username, password, email>
+                - login <username password>
+                - help
+                - quit
+                """;
     }
 }

@@ -12,7 +12,7 @@ public class ListHandler {
         GameService service = new GameService();
         ArrayList<GameData> list = new ArrayList<>();
         for (GameData g : service.listGames(req.authToken(), req.storageType()).gamesList()) {
-            GameData gameData = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(),null);
+            GameData gameData = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(),g.game());
             list.add(gameData);
         }
         return list;

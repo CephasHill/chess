@@ -96,7 +96,7 @@ public class Server {
         try {
             ArrayList<GameData> result = handler.listGames(req);
             response.status(200);
-            return gson.toJson(new ListGamesResult(result));
+            return gson.toJson(Map.of("games", result));
         } catch (DataAccessException e) {
             response.status(401);
             return gson.toJson(Map.of("message",e.getMessage()));

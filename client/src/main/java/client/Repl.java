@@ -39,10 +39,10 @@ public class Repl {
                 try {
                     var pair = preLoginClient.eval(line);
                     result = pair.getLeft();
-                    auth = pair.getRight().authToken();
-                    username = pair.getRight().username();
                     System.out.print(BLUE + result);
                     if (result.toLowerCase().startsWith("logged in as")) {
+                        auth = pair.getRight().authToken();
+                        username = pair.getRight().username();
                         state = State.SIGNEDIN;
                     }
                 } catch (Exception e) {

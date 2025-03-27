@@ -21,7 +21,7 @@ public class MySqlUserDAO {
 
     public AuthData createUser(UserData u) throws DataAccessException {
         if (userExists(u.username())) { // Level 1
-            throw new DataAccessException("Username already exists.");
+            throw new DataAccessException("Username or email already exists.");
         }
         String authToken = generateAuth();
         try (Connection conn = getConnection()) { // Level 2

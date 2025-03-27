@@ -27,7 +27,7 @@ public class PostLoginClient {
                 case "logout" -> logout(params);
                 case "list" -> listGames(params);
                 case "create" -> createGame(params);
-//                case "join" -> joinGame(params);
+                case "join" -> joinGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -49,7 +49,7 @@ public class PostLoginClient {
             var res = server.listGames(new ListGamesRequest(auth, storageType));
             StringBuilder list = new StringBuilder();
             for (GameData game : res.games()) {
-                list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}");
+                list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}\n");
             }
             if (list.toString().isEmpty()) {
                 return "No games found";
@@ -67,6 +67,9 @@ public class PostLoginClient {
         } catch (ResponseException e) {
             return "Error: " + e.getMessage();
         }
+    }
+    public String joinGame(String... params) throws ResponseException {
+        return null;
     }
     public String help() {
         return """

@@ -71,7 +71,7 @@ public class PostLoginClient {
     public Pair<String,GameData> joinGame(String... params) throws ResponseException {
         try {
             var data = server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType)).gameData();
-            return new Pair<>(String.format("Joined game %s as color %s", params[0], params[1]),data);
+            return new Pair<>(String.format("Joined game %s as color %s\n", params[0], params[1]),data);
         } catch (ResponseException e) {
             return new Pair<>("Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()),null);
         }
@@ -83,6 +83,8 @@ public class PostLoginClient {
                 - list
                 - create <gameName>
                 - join <gameNumber>
+                - observe <gameNumber>
+                - quit
                 """,null);
     }
 }

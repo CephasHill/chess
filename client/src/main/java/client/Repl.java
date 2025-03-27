@@ -18,7 +18,7 @@ public class Repl {
     public Repl(int port) {
         preLoginClient = new PreLoginClient(port);
         postLoginClient = new PostLoginClient(port);
-        gameClient = new GameClient(port);
+        gameClient = new GameClient();
     }
 
     public void run() {
@@ -41,7 +41,7 @@ public class Repl {
                         state = State.SIGNEDIN;
                     }
                 } catch (Exception e) {
-                    System.out.println(RED + e);
+                    System.out.println(RED + "Error: incorrect login or registration");
                 }
             } else if (state == State.SIGNEDIN) {
                 printPrompt();
@@ -56,6 +56,12 @@ public class Repl {
                     if (result.toLowerCase().startsWith("joined game")) {
                         state = State.INGAME;
                         gameData = pair.getRight();
+                        gameClient.printBoard(gameData, new AuthData(username,auth));
+                    }
+                    if (result.toLowerCase().startsWith("observing")) {
+                        state = State.INGAME;
+                        gameData = pair.getRight();
+                        gameClient.printBoard(gameData, new AuthData(username,auth));
                     }
                 } catch (Exception e) {
                     System.out.print(RED + e);
@@ -64,7 +70,7 @@ public class Repl {
                 printPrompt();
                 String line = scanner.nextLine();
                 try {
-                    result = gameClient.eval(line, new AuthData(username,auth), gameData);
+                    gameClient.eval(line, new AuthData(username,auth), gameData);
                 } catch (Exception e) {
                     System.out.print(RED + e);
                 }

@@ -15,16 +15,11 @@ import static java.lang.System.out;
 import static ui.EscapeSequences.*;
 
 public class GameClient {
-    private final ServerFacade server;
-    private State state = State.SIGNEDOUT;
     private final String storageType = "sql";
-    private String auth = null;
-    public GameClient(int port) {
-        server = new ServerFacade(port);
-    }
+
     public String eval(String input, AuthData authData, GameData data) {
         try {
-            this.auth = authData.authToken();
+            String auth = authData.authToken();
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);

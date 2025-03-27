@@ -82,7 +82,7 @@ public class MySqlGameDAO {
             conn.setAutoCommit(false);
             try { // Level 3
                 // Check game and get current players
-                String[] players = checkGameAvailability(conn, id, color);
+                String[] players = getWhiteBlackUsernames(conn, id);
                 String whiteUsername = players[0];
                 String blackUsername = players[1];
 
@@ -131,7 +131,7 @@ public class MySqlGameDAO {
     }
 
     // Helper method to check game availability
-    private String[] checkGameAvailability(Connection conn, int id, String color) throws SQLException, DataAccessException {
+    private String[] getWhiteBlackUsernames(Connection conn, int id) throws SQLException, DataAccessException {
         String selectQuery = "SELECT whiteUsername, blackUsername FROM games WHERE id = ?";
         try (PreparedStatement ps = conn.prepareStatement(selectQuery)) {
             ps.setInt(1, id);

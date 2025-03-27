@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import model.AuthData;
 import model.GameData;
 import server.ServerFacade;
 
@@ -21,14 +22,14 @@ public class GameClient {
     public GameClient(int port) {
         server = new ServerFacade(port);
     }
-    public String eval(String input, String auth, GameData data) {
+    public String eval(String input, AuthData authData, GameData data) {
         try {
-            this.auth = auth;
+            this.auth = authData.authToken();
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "print" -> printBoard(data);
+                case "print" -> printBoard(data, authData);
 //                case "list" -> listGames(params);
 //                case "create" -> createGame(params);
 //                case "join" -> joinGame(params);
@@ -43,44 +44,56 @@ public class GameClient {
         return """
                 The following are valid commands:
                 - help
+                - print
                 - quit
                 """;
     }
-    public String printBoard(GameData data) {
-        ChessBoard board = data.game().getBoard();
+    public String printBoard(GameData gameData, AuthData authData) {
+        ChessBoard board = gameData.game().getBoard();
         StringBuilder sb = new StringBuilder();
         out.print(ERASE_SCREEN);
 
-        // print column labels
-        out.print("  ");
+        // Determine perspective: White (8 to 1) or Black (1 to 8)
+        boolean isBlack = authData.username() != null && authData.username().equals(gameData.blackUsername());
+        int startRow = isBlack ? 1 : 8;
+        int endRow = isBlack ? 8 : 1;
+        int rowStep = isBlack ? 1 : -1;
+
+        // Print column labels (always a to h)
+        out.print("   ");
+        sb.append("   ");
         for (char col = 'a'; col <= 'h'; col++) {
             out.print(" " + col + " ");
+            sb.append(" ").append(col).append(" ");
         }
         out.print("\n");
+        sb.append("\n");
 
-        for (int row = 1; row <= 8; row++) {
-            out.print(row + " ");
-            for (int col = 1; col <= 8; col++) {
+        // Print rows based on perspective
+        for (int row = startRow; isBlack ? row <= endRow : row >= endRow; row += rowStep) {
+            out.print(" " + row + " ");
+            sb.append(" ").append(row).append(" ");
+            for (int col = 1; col <= 8; col++) { // Always 1 to 8 (a to h)
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
-                String pieceChar = (piece == null) ? EMPTY : getPieceChar(piece);
+                String pieceChar = (piece == null) ? " " : getPieceChar(piece);
 
-                if ((row + col) % 2 == 0) {
-                    //dark
+                if ((row + col) % 2 == 1) { // Dark squares (a1, c1, etc.)
                     out.print(SET_BG_COLOR_DARK_GREEN);
-                } else {
+                    out.print(SET_TEXT_COLOR_WHITE); // White text on dark
+                } else { // Light squares (b1, d1, etc.)
                     out.print(SET_BG_COLOR_WHITE);
+                    out.print(SET_TEXT_COLOR_BLACK); // Black text on light
                 }
-                out.print(EMPTY + pieceChar + EMPTY);
-                sb.append(EMPTY).append(pieceChar).append(EMPTY);
+                out.print(" " + pieceChar + " ");
+                sb.append(" ").append(pieceChar).append(" ");
+                out.print(RESET);
             }
-            out.print(RESET);
             out.print("\n");
             sb.append("\n");
         }
 
-        out.print(SET_BG_COLOR_BLACK);
-        out.print(SET_TEXT_COLOR_WHITE);
-
+        out.print(RESET);
+        out.flush();
         return sb.toString();
     }
 
@@ -88,12 +101,12 @@ public class GameClient {
         ChessPiece.PieceType type = piece.getPieceType();
         ChessGame.TeamColor color = piece.getTeamColor();
         return switch (type) {
-            case KING -> color == ChessGame.TeamColor.WHITE ? WHITE_KING : BLACK_KING;
-            case QUEEN -> color == ChessGame.TeamColor.WHITE ? WHITE_QUEEN : BLACK_QUEEN;
-            case BISHOP -> color == ChessGame.TeamColor.WHITE ? WHITE_BISHOP : BLACK_BISHOP;
-            case KNIGHT -> color == ChessGame.TeamColor.WHITE ? WHITE_KNIGHT : BLACK_KNIGHT;
-            case ROOK -> color == ChessGame.TeamColor.WHITE ? WHITE_ROOK : BLACK_ROOK;
-            case PAWN -> color == ChessGame.TeamColor.WHITE ? WHITE_PAWN : BLACK_PAWN;
+            case KING -> color == ChessGame.TeamColor.WHITE ? "K" : "k";
+            case QUEEN -> color == ChessGame.TeamColor.WHITE ? "Q" : "q";
+            case BISHOP -> color == ChessGame.TeamColor.WHITE ? "B" : "b";
+            case KNIGHT -> color == ChessGame.TeamColor.WHITE ? "N" : "n";
+            case ROOK -> color == ChessGame.TeamColor.WHITE ? "R" : "r";
+            case PAWN -> color == ChessGame.TeamColor.WHITE ? "P" : "p";
         };
     }
 }

@@ -62,9 +62,7 @@ public class ServerFacade {
             }
             writeBody(method, request, http);
             http.connect();
-            System.out.println("response code:" + http.getResponseCode());
             throwIfNotSuccessful(http);
-            System.out.println("connected to server.");
             return readBody(http, responseClass);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -97,7 +95,6 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    System.out.println("oops.");
                     throw ResponseException.fromJson(respErr);
                 }
             }
@@ -107,13 +104,10 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
-        System.out.println("reading body...");
         try (InputStream respBody = http.getInputStream()) {
-            System.out.println(respBody);
             if (respBody != null && responseClass != null) {
                 // Read the raw bytes and print them
                 String rawResponse = new String(respBody.readAllBytes());
-                System.out.println(rawResponse);
                 response = new Gson().fromJson(rawResponse, responseClass);
             }
         }

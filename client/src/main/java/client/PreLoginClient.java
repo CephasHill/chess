@@ -1,5 +1,6 @@
 package client;
 
+import model.AuthData;
 import model.Pair;
 import exception.ResponseException;
 import model.request.LoginRequest;
@@ -12,13 +13,12 @@ import java.util.Objects;
 public class PreLoginClient {
     private String username = null;
     private final ServerFacade server;
-    private State state = State.SIGNEDOUT;
     private final String storageType = "sql";
     public PreLoginClient(int port) {
         server = new ServerFacade(port);
     }
 
-    public Pair<String,String> eval(String input) {
+    public Pair<String,AuthData> eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
@@ -33,13 +33,12 @@ public class PreLoginClient {
             return new Pair<>(e.getMessage(),null);
         }
     }
-    public Pair<String,String> register(String... params) throws ResponseException {
+    public Pair<String,AuthData> register(String... params) throws ResponseException {
         if (params.length >= 3) {
             username = String.join("-", params[0]);
             try {
                 var res = server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
-                state = State.SIGNEDIN;
-                return new Pair<>(String.format("logged in as %s", username),res.authToken());
+                return new Pair<>(String.format("logged in as %s", username),res);
             } catch (ResponseException e) {
                 if (Objects.equals(e.getMessage(), "Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null")) {
                     return new Pair<>("Username already exists",null);
@@ -50,13 +49,12 @@ public class PreLoginClient {
         throw new ResponseException(400, "Excpected: <username password email>");
     }
 
-    public Pair<String,String> login(String... params) throws ResponseException {
+    public Pair<String, AuthData> login(String... params) throws ResponseException {
         if (params.length >= 2) {
             username = String.join("-", params[0]);
             try {
                 var res = server.login(new LoginRequest(params[0], params[1], storageType));
-                state = State.SIGNEDIN;
-                return new Pair<>(String.format("logged in as %s", username), res.authToken());
+                return new Pair<>(String.format("logged in as %s", username), new AuthData(res.username(),res.authToken()));
             } catch (ResponseException e) {
                 return new Pair<>("Error: " + e.getMessage(),null);
             }

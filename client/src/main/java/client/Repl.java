@@ -1,5 +1,6 @@
 package client;
 
+import model.AuthData;
 import model.GameData;
 
 import java.util.Scanner;
@@ -12,6 +13,7 @@ public class Repl {
     private final GameClient gameClient;
     private State state = State.SIGNEDOUT;
     private String auth = null;
+    private String username = null;
 
     public Repl(int port) {
         preLoginClient = new PreLoginClient(port);
@@ -32,7 +34,8 @@ public class Repl {
                 try {
                     var pair = preLoginClient.eval(line);
                     result = pair.getLeft();
-                    auth = pair.getRight();
+                    auth = pair.getRight().authToken();
+                    username = pair.getRight().username();
                     System.out.print(BLUE + result);
                     if (result.toLowerCase().startsWith("logged in as")) {
                         state = State.SIGNEDIN;
@@ -61,8 +64,7 @@ public class Repl {
                 printPrompt();
                 String line = scanner.nextLine();
                 try {
-                    result = gameClient.eval(line, auth, gameData);
-                    System.out.print(BLUE + result);
+                    result = gameClient.eval(line, new AuthData(username,auth), gameData);
                 } catch (Exception e) {
                     System.out.print(RED + e);
                 }

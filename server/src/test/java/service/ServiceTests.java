@@ -1,6 +1,8 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
+import model.GameData;
 import model.request.DeleteRequest;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
@@ -132,7 +134,7 @@ public class ServiceTests {
     public void joinPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email","mem"));
         CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
-        JoinGameResult joinRes = gameService.joinGame("white", createRes.gameID(), regRes.authData().authToken(), "mem");
+        GameData joinRes = gameService.joinGame("white", createRes.gameID(), regRes.authData().authToken(), "mem");
 
         assertNotNull(joinRes);
 
@@ -152,7 +154,7 @@ public class ServiceTests {
     public void clearPos() throws DataAccessException {
         RegisterResult regRes = userService.register(new RegisterRequest("user", "pass", "email","mem"));
         CreateGameResult createRes = gameService.createGame("game",regRes.authData().authToken(), "mem");
-        JoinGameResult joinRes = gameService.joinGame("white", createRes.gameID(), regRes.authData().authToken(), "mem");
+        GameData joinRes = gameService.joinGame("white", createRes.gameID(), regRes.authData().authToken(), "mem");
         ClearService clearService = new ClearService();
         clearService.clearAll(new DeleteRequest("mem"));
 

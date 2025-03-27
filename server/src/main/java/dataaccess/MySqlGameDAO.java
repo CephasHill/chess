@@ -76,7 +76,7 @@ public class MySqlGameDAO {
         return games;
     }
 
-    public void join(String color, int id, String authToken) throws DataAccessException {
+    public GameData join(String color, int id, String authToken) throws DataAccessException {
         String username = authorize(authToken); // Level 1
         try (Connection conn = getConnection()) { // Level 2
             conn.setAutoCommit(false);
@@ -98,7 +98,27 @@ public class MySqlGameDAO {
                         throw new DataAccessException("Error: No games found with that gameID.");
                     }
                 }
-                conn.commit();
+
+                // Fetch the updated game state
+                String selectGameQuery = "SELECT id, whiteUsername, blackUsername, gameName, chessGame FROM games WHERE id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(selectGameQuery)) {
+                    ps.setInt(1, id);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            String jsonGame = rs.getString("chessGame");
+                            int jsonID = rs.getInt("id");
+                            String jsonWhiteUsername = rs.getString("whiteUsername");
+                            String jsonBlackUsername = rs.getString("blackUsername");
+                            String jsonGameName = rs.getString("gameName");
+                            Gson gson = new Gson();
+                            ChessGame game = gson.fromJson(jsonGame, ChessGame.class);
+                            conn.commit();
+                            return new GameData(jsonID, jsonWhiteUsername, jsonBlackUsername, jsonGameName, game); // Return the ChessGame object
+                        } else {
+                            throw new DataAccessException("Error: Game not found after update.");
+                        }
+                    }
+                }
             } catch (SQLException e) {
                 conn.rollback();
                 throw new DataAccessException("Error: Failed to join game: " + e.getMessage());

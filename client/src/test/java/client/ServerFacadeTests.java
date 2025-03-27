@@ -94,7 +94,8 @@ public class ServerFacadeTests {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
         String auth = registerRes.authToken();
         var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
-        assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.gameID(),auth, storageType)));
+        var joinRes = facade.joinGame(new JoinGameRequest("WHITE",createRes.gameID(),auth, storageType));
+        assertNotNull(joinRes.gameData());
     }
     @Test
     void joinGameNeg() {

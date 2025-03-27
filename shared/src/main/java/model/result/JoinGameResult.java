@@ -1,4 +1,7 @@
 package model.result;
 
-public record JoinGameResult() {
+import chess.ChessGame;
+import model.GameData;
+
+public record JoinGameResult(GameData gameData) {
 }

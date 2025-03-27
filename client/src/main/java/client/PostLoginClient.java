@@ -3,6 +3,7 @@ package client;
 import exception.ResponseException;
 import model.GameData;
 import model.request.CreateGameRequest;
+import model.request.JoinGameRequest;
 import model.request.ListGamesRequest;
 import model.request.LogoutRequest;
 import server.ServerFacade;
@@ -69,7 +70,12 @@ public class PostLoginClient {
         }
     }
     public String joinGame(String... params) throws ResponseException {
-        return null;
+        try {
+            server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType));
+            return String.format("Joined game %s as color %s", params[0], params[1]);
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+        }
     }
     public String help() {
         return """

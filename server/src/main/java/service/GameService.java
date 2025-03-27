@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryGameDataDAO;
 import dataaccess.MySqlGameDAO;
@@ -35,16 +36,14 @@ public class GameService {
             return new ListGamesResult(gameListArray);
         }
     }
-    public JoinGameResult joinGame(String color, int id, String authToken, String storageType) throws DataAccessException {
+    public GameData joinGame(String color, int id, String authToken, String storageType) throws DataAccessException {
         if (storageType.equals("mem")) {
             MemoryGameDataDAO dao = new MemoryGameDataDAO();
-            dao.join(color, id, authToken);
-            return new JoinGameResult();
+            return dao.join(color, id, authToken);
         }
         else {
             MySqlGameDAO dao = new MySqlGameDAO();
-            dao.join(color, id, authToken);
-            return new JoinGameResult();
+            return dao.join(color, id, authToken);
         }
     }
 }

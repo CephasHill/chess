@@ -31,7 +31,7 @@ public class Repl {
                     result = pair.getLeft();
                     auth = pair.getRight();
                     System.out.print(BLUE + result);
-                    if (result.startsWith("logged in as")) {
+                    if (result.toLowerCase().startsWith("logged in as")) {
                         state = State.SIGNEDIN;
                     }
                 } catch (Exception e) {
@@ -43,8 +43,11 @@ public class Repl {
                 try {
                     result = postLoginClient.eval(line, auth);
                     System.out.print(BLUE + result);
-                    if (result.equals("logged out")) {
+                    if (result.equalsIgnoreCase("logged out")) {
                         state = State.SIGNEDOUT;
+                    }
+                    if (result.toLowerCase().startsWith("joined game")) {
+                        state = State.INGAME;
                     }
                 } catch (Exception e) {
                     System.out.print(RED + e);
@@ -53,7 +56,7 @@ public class Repl {
                 printPrompt();
                 String line = scanner.nextLine();
                 try {
-//                    result = gameClient.eval(line, auth);
+                    result = gameClient.eval(line, auth);
                     System.out.print(BLUE + result);
                 } catch (Exception e) {
                     System.out.print(RED + e);

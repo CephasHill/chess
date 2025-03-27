@@ -61,9 +61,9 @@ public class Server {
         JoinGameRequest joinRequest = new JoinGameRequest(temp.playerColor(), temp.gameID(), authToken, storageType);
         JoinHandler handler = new JoinHandler();
         try {
-            handler.join(joinRequest);
+            var gameData = handler.join(joinRequest);
             response.status(200);
-            return gson.toJson(new JoinGameResult());
+            return gson.toJson(new JoinGameResult(gameData));
         } catch (DataAccessException e) {
             if (e.getMessage().equals("Error: Unavailable")) {
                 response.status(403);

@@ -36,7 +36,7 @@ public class MemoryGameDataDAO {
         }
     }
 
-    public void join(String color, int id, String authToken) throws DataAccessException {
+    public GameData join(String color, int id, String authToken) throws DataAccessException {
         authorize(authToken);
         if (!database.gameMap.containsKey(id)) {
             throw new DataAccessException("Error: Unacceptable gameID");
@@ -48,7 +48,9 @@ public class MemoryGameDataDAO {
         if (color.equalsIgnoreCase("white")) {
             if (ogData.whiteUsername() == null) {
                 String username = database.authMap.get(authToken);
-                database.gameMap.put(id, new GameData(id, username, ogData.blackUsername(), ogData.gameName(), ogData.game()));
+                GameData gameData = new GameData(id, username, ogData.blackUsername(), ogData.gameName(), ogData.game());
+                database.gameMap.put(id, gameData);
+                return gameData;
             }
             else {
                 throw new DataAccessException("Error: Unavailable");
@@ -66,5 +68,6 @@ public class MemoryGameDataDAO {
         else {
             throw new DataAccessException("Error: Unacceptable color");
         }
+        return null;
     }
 }

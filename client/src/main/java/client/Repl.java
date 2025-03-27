@@ -1,5 +1,7 @@
 package client;
 
+import model.GameData;
+
 import java.util.Scanner;
 
 import static client.EscapeSequences.*;
@@ -22,6 +24,7 @@ public class Repl {
         System.out.println("Welcome to chess. Enter \"help\" to start.");
         Scanner scanner = new Scanner(System.in);
         var result = "";
+        GameData gameData = null;
         while (!result.equals("quit")) {
             if (state == State.SIGNEDOUT) {
                 printPrompt();
@@ -41,13 +44,15 @@ public class Repl {
                 printPrompt();
                 String line = scanner.nextLine();
                 try {
-                    result = postLoginClient.eval(line, auth);
+                    var pair = postLoginClient.eval(line, auth);
+                    result = pair.getLeft();
                     System.out.print(BLUE + result);
                     if (result.equalsIgnoreCase("logged out")) {
                         state = State.SIGNEDOUT;
                     }
                     if (result.toLowerCase().startsWith("joined game")) {
                         state = State.INGAME;
+                        gameData = pair.getRight();
                     }
                 } catch (Exception e) {
                     System.out.print(RED + e);
@@ -56,7 +61,7 @@ public class Repl {
                 printPrompt();
                 String line = scanner.nextLine();
                 try {
-                    result = gameClient.eval(line, auth);
+                    result = gameClient.eval(line, auth, gameData);
                     System.out.print(BLUE + result);
                 } catch (Exception e) {
                     System.out.print(RED + e);

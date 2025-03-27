@@ -1,5 +1,6 @@
 package client;
 
+import model.GameData;
 import server.ServerFacade;
 
 import java.util.Arrays;
@@ -12,7 +13,7 @@ public class GameClient {
     public GameClient(int port) {
         server = new ServerFacade(port);
     }
-    public String eval(String input, String auth) {
+    public String eval(String input, String auth, GameData data) {
         try {
             this.auth = auth;
             var tokens = input.toLowerCase().split(" ");

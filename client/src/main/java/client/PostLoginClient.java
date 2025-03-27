@@ -2,6 +2,7 @@ package client;
 
 import exception.ResponseException;
 import model.GameData;
+import model.Pair;
 import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.ListGamesRequest;
@@ -12,13 +13,12 @@ import java.util.Arrays;
 
 public class PostLoginClient {
     private final ServerFacade server;
-    private State state = State.SIGNEDOUT;
     private final String storageType = "sql";
     private String auth = null;
     public PostLoginClient(int port) {
         server = new ServerFacade(port);
     }
-    public String eval(String input, String auth) {
+    public Pair<String,GameData> eval(String input, String auth) {
         try {
             this.auth = auth;
             var tokens = input.toLowerCase().split(" ");
@@ -29,23 +29,22 @@ public class PostLoginClient {
                 case "list" -> listGames(params);
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
-                case "quit" -> "quit";
+                case "quit" -> new Pair<>("quit",null);
                 default -> help();
             };
         } catch (Exception e) {
-            return e.getMessage();
+            return new Pair<>(e.getMessage(),null);
         }
     }
-    public String logout(String... params) throws ResponseException {
+    public Pair<String,GameData> logout(String... params) throws ResponseException {
         try {
             server.logout(new LogoutRequest(auth, storageType));
-            state = State.SIGNEDOUT;
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage();
+            return new Pair<>("Error: " + e.getMessage(),null);
         }
-        return "logged out";
+        return new Pair<>("logged out",null);
     }
-    public String listGames(String... params) throws ResponseException {
+    public Pair<String,GameData> listGames(String... params) throws ResponseException {
         try {
             var res = server.listGames(new ListGamesRequest(auth, storageType));
             StringBuilder list = new StringBuilder();
@@ -53,37 +52,37 @@ public class PostLoginClient {
                 list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}\n");
             }
             if (list.toString().isEmpty()) {
-                return "No games found";
+                return new Pair<>("No games found",null);
             } else {
-                return list.toString();
+                return new Pair<>(list.toString(),null);
             }
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage();
+            return new Pair<>("Error: " + e.getMessage(),null);
         }
     }
-    public String createGame(String... params) throws ResponseException {
+    public Pair<String,GameData> createGame(String... params) throws ResponseException {
         try {
             server.createGame(new CreateGameRequest(params[0], auth, storageType));
-            return String.format("Created game %s", params[0]);
+            return new Pair<>(String.format("Created game %s", params[0]),null);
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage();
+            return new Pair<>("Error: " + e.getMessage(),null);
         }
     }
-    public String joinGame(String... params) throws ResponseException {
+    public Pair<String,GameData> joinGame(String... params) throws ResponseException {
         try {
-            server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType));
-            return String.format("Joined game %s as color %s", params[0], params[1]);
+            var data = server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType)).gameData();
+            return new Pair<>(String.format("Joined game %s as color %s", params[0], params[1]),data);
         } catch (ResponseException e) {
-            return "Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+            return new Pair<>("Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()),null);
         }
     }
-    public String help() {
-        return """
+    public Pair<String,GameData> help() {
+        return new Pair<>("""
                 The following are valid commands:
                 - logout
                 - list
                 - create <gameName>
                 - join <gameNumber>
-                """;
+                """,null);
     }
 }

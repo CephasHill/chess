@@ -1,4 +1,4 @@
-import client.PreLoginRepl;
+import client.Repl;
 
 public class Main {
     public static void main(String[] args) {
@@ -6,6 +6,6 @@ public class Main {
         if (args.length == 1) {
             port = Integer.parseInt(args[0]);
         }
-        new PreLoginRepl(port).run();
+        new Repl(port).run();
     }
 }

@@ -1,5 +1,6 @@
 package client;
 
+import model.Pair;
 import exception.ResponseException;
 import model.request.LoginRequest;
 import model.request.RegisterRequest;
@@ -10,15 +11,13 @@ import java.util.Arrays;
 public class PreLoginClient {
     private String username = null;
     private final ServerFacade server;
-    private final int port;
     private State state = State.SIGNEDOUT;
-    private String storageType = "sql";
-    public PreLoginClient(int port, PreLoginRepl preLoginRepl) {
-        this.port = port;
+    private final String storageType = "sql";
+    public PreLoginClient(int port) {
         server = new ServerFacade(port);
     }
 
-    public String eval(String input) {
+    public Pair<String,String> eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0].toLowerCase() : "help";
@@ -33,16 +32,16 @@ public class PreLoginClient {
             return e.getMessage();
         }
     }
-    public String register(String... params) throws ResponseException {
+    public Pair<String,String> register(String... params) throws ResponseException {
         if (params.length >= 3) {
             username = String.join("-", params[0]);
             try {
-                server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
+                var res = server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
                 state = State.SIGNEDIN;
+                return new Pair<>(String.format("You signed in as %s", username),res.authData().authToken());
             } catch (ResponseException e) {
-                return "Error: " + e.getMessage();
+                return new Pair<>("Error: " + e.getMessage(),null);
             }
-            return String.format("You signed in as %s", username);
         }
         throw new ResponseException(400, "Excpected: <username password email>");
     }

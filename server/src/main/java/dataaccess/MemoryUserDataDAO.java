@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import model.Pair;
 import model.UserData;
 
 import java.util.UUID;

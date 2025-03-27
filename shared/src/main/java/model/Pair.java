@@ -1,4 +1,4 @@
-package dataaccess;
+package model;
 
 import java.util.Objects;
 

@@ -191,7 +191,7 @@ public class Server {
             return gson.toJson(errorMap);
         }
         response.status(200);
-        return gson.toJson(handlerResult);
+        return gson.toJson(handlerResult.authData());
     }
 
     public void stop() {

@@ -48,7 +48,7 @@ public class PostLoginClient {
         try {
             var res = server.listGames(new ListGamesRequest(auth, storageType));
             StringBuilder list = new StringBuilder();
-            for (GameData game : res.gamesList()) {
+            for (GameData game : res.games()) {
                 list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}");
             }
             if (list.toString().isEmpty()) {

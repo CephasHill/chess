@@ -11,7 +11,7 @@ public class ListHandler {
     public ArrayList<GameData> listGames(ListGamesRequest req) throws DataAccessException {
         GameService service = new GameService();
         ArrayList<GameData> list = new ArrayList<>();
-        for (GameData g : service.listGames(req.authToken(), req.storageType()).gamesList()) {
+        for (GameData g : service.listGames(req.authToken(), req.storageType()).games()) {
             GameData gameData = new GameData(g.gameID(), g.whiteUsername(), g.blackUsername(), g.gameName(),g.game());
             list.add(gameData);
         }

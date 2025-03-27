@@ -46,7 +46,7 @@ public class ServerFacadeTests {
     @Test
     void registerPos() throws Exception {
         var registerResult = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        assertTrue(registerResult.authData().authToken().length() > 10);
+        assertTrue(registerResult.authToken().length() > 10);
     }
     @Test
     void registerNeg() {
@@ -55,7 +55,7 @@ public class ServerFacadeTests {
     @Test
     void loginPos() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        facade.logout(new LogoutRequest(registerRes.authData().authToken(),storageType));
+        facade.logout(new LogoutRequest(registerRes.authToken(),storageType));
         var res = facade.login(new LoginRequest("username","password",storageType));
         assertTrue(res.authToken().length() > 10);
     }
@@ -66,7 +66,7 @@ public class ServerFacadeTests {
     @Test
     void logoutPos() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(registerRes.authData().authToken(),storageType)));
+        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(registerRes.authToken(),storageType)));
     }
     @Test
     void logoutNeg() {
@@ -75,13 +75,13 @@ public class ServerFacadeTests {
     @Test
     void createGamePos() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        String auth = registerRes.authData().authToken();
+        String auth = registerRes.authToken();
         assertDoesNotThrow(() -> facade.createGame(new CreateGameRequest("gameName", auth, storageType)));
     }
     @Test
     void createGameID() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username", "password", "email@email.com", storageType));
-        String auth = registerRes.authData().authToken();
+        String auth = registerRes.authToken();
         var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
         assertEquals(1,createRes.gameID());
     }
@@ -92,7 +92,7 @@ public class ServerFacadeTests {
     @Test
     void joinGamePos() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        String auth = registerRes.authData().authToken();
+        String auth = registerRes.authToken();
         var createRes = facade.createGame(new CreateGameRequest("gameName", auth, storageType));
         assertDoesNotThrow(() -> facade.joinGame(new JoinGameRequest("WHITE",createRes.gameID(),auth, storageType)));
     }
@@ -103,12 +103,12 @@ public class ServerFacadeTests {
     @Test
     void listGamesPos() throws Exception {
         var registerRes = facade.register(new RegisterRequest("username","password","email@email.com", storageType));
-        String auth = registerRes.authData().authToken();
+        String auth = registerRes.authToken();
         facade.createGame(new CreateGameRequest("game1", auth, storageType));
         facade.createGame(new CreateGameRequest("game2", auth, storageType));
         facade.createGame(new CreateGameRequest("game3", auth, storageType));
         var listRes = facade.listGames(new ListGamesRequest(auth, storageType));
-        assertEquals(3, listRes.gamesList().size());
+        assertEquals(3, listRes.games().size());
     }
     @Test
     void listGamesNeg() {

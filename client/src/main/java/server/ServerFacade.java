@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.request.*;
 import model.result.*;
 
@@ -24,8 +25,8 @@ public class ServerFacade {
         this.gson = new Gson();
     }
 
-    public RegisterResult register(RegisterRequest req) throws ResponseException {
-        return makeRequest("POST", "/user", req, RegisterResult.class);
+    public AuthData register(RegisterRequest req) throws ResponseException {
+        return makeRequest("POST", "/user", req, AuthData.class);
     }
 
     public LoginResult login(LoginRequest req) throws ResponseException {

@@ -94,7 +94,7 @@ public class ServiceTests {
         ListGamesResult listRes = gameService.listGames(regRes.authData().authToken(), "mem");
 
         assertNotNull(listRes);
-        assertEquals(new ListGamesResult(new ArrayList<>(listRes.gamesList())), listRes);
+        assertEquals(new ListGamesResult(new ArrayList<>(listRes.games())), listRes);
 
     }
     @Test

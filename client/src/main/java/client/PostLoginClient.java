@@ -1,6 +1,8 @@
 package client;
 
 import exception.ResponseException;
+import model.GameData;
+import model.request.ListGamesRequest;
 import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import server.ServerFacade;
@@ -23,7 +25,7 @@ public class PostLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout(params);
-//                case "list" -> listGames(params);
+                case "list" -> listGames(params);
 //                case "create" -> createGame(params);
 //                case "join" -> joinGame(params);
                 case "quit" -> "quit";
@@ -41,6 +43,22 @@ public class PostLoginClient {
             return "Error: " + e.getMessage();
         }
         return "logged out";
+    }
+    public String listGames(String... params) throws ResponseException {
+        try {
+            var res = server.listGames(new ListGamesRequest(auth, storageType));
+            StringBuilder list = new StringBuilder();
+            for (GameData game : res.gamesList()) {
+                list.append(STR."\{game.gameID()} Game Name: \{game.gameName()} - White Player: \{game.whiteUsername()} - Black Player: \{game.blackUsername()}");
+            }
+            if (list.toString().isEmpty()) {
+                return "No games found";
+            } else {
+                return list.toString();
+            }
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
+        }
     }
     public String help() {
         return """

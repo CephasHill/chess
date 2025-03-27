@@ -15,11 +15,10 @@ import java.net.URL;
 
 public class ServerFacade {
     private final String serverUrl;
-    private final Gson gson;
 
     public ServerFacade(int port) {
         this.serverUrl = "http://localhost:" + port;
-        this.gson = new Gson();
+        Gson gson = new Gson();
     }
 
     public AuthData register(RegisterRequest req) throws ResponseException {

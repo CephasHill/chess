@@ -2,8 +2,8 @@ package client;
 
 import exception.ResponseException;
 import model.GameData;
+import model.request.CreateGameRequest;
 import model.request.ListGamesRequest;
-import model.request.LoginRequest;
 import model.request.LogoutRequest;
 import server.ServerFacade;
 
@@ -26,7 +26,7 @@ public class PostLoginClient {
             return switch (cmd) {
                 case "logout" -> logout(params);
                 case "list" -> listGames(params);
-//                case "create" -> createGame(params);
+                case "create" -> createGame(params);
 //                case "join" -> joinGame(params);
                 case "quit" -> "quit";
                 default -> help();
@@ -49,7 +49,7 @@ public class PostLoginClient {
             var res = server.listGames(new ListGamesRequest(auth, storageType));
             StringBuilder list = new StringBuilder();
             for (GameData game : res.gamesList()) {
-                list.append(STR."\{game.gameID()} Game Name: \{game.gameName()} - White Player: \{game.whiteUsername()} - Black Player: \{game.blackUsername()}");
+                list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}");
             }
             if (list.toString().isEmpty()) {
                 return "No games found";
@@ -60,13 +60,21 @@ public class PostLoginClient {
             return "Error: " + e.getMessage();
         }
     }
+    public String createGame(String... params) throws ResponseException {
+        try {
+            server.createGame(new CreateGameRequest(params[0], auth, storageType));
+            return String.format("Created game %s", params[0]);
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
+        }
+    }
     public String help() {
         return """
                 The following are valid commands:
                 - logout
                 - list
                 - create <gameName>
-                - join <gameID>
+                - join <gameNumber>
                 """;
     }
 }

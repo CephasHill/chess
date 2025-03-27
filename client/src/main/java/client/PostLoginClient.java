@@ -34,24 +34,21 @@ public class PostLoginClient {
         }
     }
     public String logout(String... params) throws ResponseException {
-        if (params.length >= 2) {
-            try {
-                server.logout(new LogoutRequest(auth, storageType));
-                state = State.SIGNEDOUT;
-            } catch (ResponseException e) {
-                return "Error: " + e.getMessage();
-            }
-            return "logged out";
+        try {
+            server.logout(new LogoutRequest(auth, storageType));
+            state = State.SIGNEDOUT;
+        } catch (ResponseException e) {
+            return "Error: " + e.getMessage();
         }
-        throw new ResponseException(400, "Excpected: <username password>");
+        return "logged out";
     }
     public String help() {
         return """
                 The following are valid commands:
-                - register <username, password, email>
-                - login <username password>
-                - help
-                - quit
+                - logout
+                - list
+                - create <gameName>
+                - join <gameID>
                 """;
     }
 }

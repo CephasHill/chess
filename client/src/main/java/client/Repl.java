@@ -8,7 +8,7 @@ public class Repl {
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
     private final GameClient gameClient;
-    private final State state = State.SIGNEDOUT;
+    private State state = State.SIGNEDOUT;
     private String auth = null;
 
     public Repl(int port) {
@@ -18,6 +18,7 @@ public class Repl {
     }
 
     public void run() {
+        state = State.SIGNEDOUT;
         System.out.println("Welcome to chess. Enter \"help\" to start.");
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -30,6 +31,9 @@ public class Repl {
                     result = pair.getLeft();
                     auth = pair.getRight();
                     System.out.print(BLUE + result);
+                    if (result.startsWith("logged in as")) {
+                        state = State.SIGNEDIN;
+                    }
                 } catch (Exception e) {
                     System.out.println(RED + e);
                 }
@@ -39,6 +43,9 @@ public class Repl {
                 try {
                     result = postLoginClient.eval(line, auth);
                     System.out.print(BLUE + result);
+                    if (result.equals("logged out")) {
+                        state = State.SIGNEDOUT;
+                    }
                 } catch (Exception e) {
                     System.out.print(RED + e);
                 }

@@ -39,7 +39,7 @@ public class PreLoginClient {
             try {
                 var res = server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
                 state = State.SIGNEDIN;
-                return new Pair<>(String.format("You signed in as %s", username),res.authData().authToken());
+                return new Pair<>(String.format("logged in as %s", username),res.authData().authToken());
             } catch (ResponseException e) {
                 if (Objects.equals(e.getMessage(), "Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null")) {
                     return new Pair<>("Username already exists",null);
@@ -56,7 +56,7 @@ public class PreLoginClient {
             try {
                 var res = server.login(new LoginRequest(params[0], params[1], storageType));
                 state = State.SIGNEDIN;
-                return new Pair<>(String.format("You logged in as %s", username), res.authToken());
+                return new Pair<>(String.format("logged in as %s", username), res.authToken());
             } catch (ResponseException e) {
                 return new Pair<>("Error: " + e.getMessage(),null);
             }

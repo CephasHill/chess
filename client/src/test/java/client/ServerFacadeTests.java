@@ -30,6 +30,15 @@ public class ServerFacadeTests {
         }
     }
 
+    @BeforeEach
+    void clearDatabaseBeforeEach() {
+        try {
+            facade.clearDatabase(new DeleteRequest(storageType));
+        } catch (ResponseException e) {
+            fail("Failed to clear database before test: " + e.getMessage());
+        }
+    }
+
     @AfterAll
     static void stopServer() {
         server.stop();

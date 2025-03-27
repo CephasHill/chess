@@ -11,6 +11,8 @@ import server.ServerFacade;
 
 import java.util.Arrays;
 
+import static client.Repl.gameNumbers;
+
 public class PostLoginClient {
     private final ServerFacade server;
     private final String storageType = "sql";
@@ -29,6 +31,7 @@ public class PostLoginClient {
                 case "list" -> listGames(params);
                 case "create" -> createGame(params);
                 case "join" -> joinGame(params);
+                case "observe" -> observeGame(params);
                 case "quit" -> new Pair<>("quit",null);
                 default -> help();
             };
@@ -36,6 +39,19 @@ public class PostLoginClient {
             return new Pair<>(e.getMessage(),null);
         }
     }
+
+    private Pair<String, GameData> observeGame(String[] params) {
+        try {
+            Integer.parseInt(params[0]);
+        } catch (NumberFormatException e) {
+            return new Pair<>("Game ID not valid.",null);
+        }
+        if (gameNumbers.contains(Integer.parseInt(params[0]))) {
+            return new Pair<>("observing\n", null);
+        }
+        return new Pair<>("Game ID not valid.", null);
+    }
+
     public Pair<String,GameData> logout(String... params) throws ResponseException {
         try {
             server.logout(new LogoutRequest(auth, storageType));
@@ -48,8 +64,11 @@ public class PostLoginClient {
         try {
             var res = server.listGames(new ListGamesRequest(auth, storageType));
             StringBuilder list = new StringBuilder();
+            list.append("list\n");
+            int gamesNum = 0;
             for (GameData game : res.games()) {
-                list.append(STR."\{game.gameID()} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}\n");
+                gamesNum++;
+                list.append(STR."\{gamesNum} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}\n");
             }
             if (list.toString().isEmpty()) {
                 return new Pair<>("No games found",null);

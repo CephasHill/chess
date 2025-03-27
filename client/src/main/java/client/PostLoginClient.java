@@ -23,9 +23,9 @@ public class PostLoginClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout(params);
-                case "list" -> listGames(params);
-                case "create" -> createGame(params);
-                case "join" -> joinGame(params);
+//                case "list" -> listGames(params);
+//                case "create" -> createGame(params);
+//                case "join" -> joinGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };

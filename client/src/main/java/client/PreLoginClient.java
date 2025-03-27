@@ -7,6 +7,7 @@ import model.request.RegisterRequest;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class PreLoginClient {
     private String username = null;
@@ -25,11 +26,11 @@ public class PreLoginClient {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "quit";
-                default -> help();
+                case "quit" -> new Pair<>("quit",null);
+                default -> new Pair<>(help(),null);
             };
         } catch (Exception e) {
-            return e.getMessage();
+            return new Pair<>(e.getMessage(),null);
         }
     }
     public Pair<String,String> register(String... params) throws ResponseException {
@@ -40,22 +41,25 @@ public class PreLoginClient {
                 state = State.SIGNEDIN;
                 return new Pair<>(String.format("You signed in as %s", username),res.authData().authToken());
             } catch (ResponseException e) {
+                if (Objects.equals(e.getMessage(), "Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null")) {
+                    return new Pair<>("Username already exists",null);
+                }
                 return new Pair<>("Error: " + e.getMessage(),null);
             }
         }
         throw new ResponseException(400, "Excpected: <username password email>");
     }
 
-    public String login(String... params) throws ResponseException {
+    public Pair<String,String> login(String... params) throws ResponseException {
         if (params.length >= 2) {
             username = String.join("-", params[0]);
             try {
-                server.login(new LoginRequest(params[0], params[1], storageType));
+                var res = server.login(new LoginRequest(params[0], params[1], storageType));
                 state = State.SIGNEDIN;
+                return new Pair<>(String.format("You logged in as %s", username), res.authToken());
             } catch (ResponseException e) {
-                return "Error: " + e.getMessage();
+                return new Pair<>("Error: " + e.getMessage(),null);
             }
-            return String.format("You logged in as %s", username);
         }
         throw new ResponseException(400, "Excpected: <username password>");
     }

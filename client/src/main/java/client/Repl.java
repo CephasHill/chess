@@ -27,8 +27,8 @@ public class Repl {
                 String line = scanner.nextLine();
                 try {
                     var pair = preLoginClient.eval(line);
-                    result = pair.getRight();
-                    auth = pair.getLeft();
+                    result = pair.getLeft();
+                    auth = pair.getRight();
                     System.out.print(BLUE + result);
                 } catch (Exception e) {
                     System.out.println(RED + e);

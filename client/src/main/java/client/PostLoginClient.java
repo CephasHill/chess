@@ -69,11 +69,11 @@ public class PostLoginClient {
             for (GameData game : res.games()) {
                 gamesNum++;
                 list.append(Integer.toString(gamesNum) +
-                        "Name: " + game.gameName() +
+                        " Name: " + game.gameName() +
                         " || White Player: " + game.whiteUsername() +
                         " || Black Player: " + game.blackUsername() + "\n");
             }
-            if (list.toString().isEmpty()) {
+            if (list.toString().equals("list\n")) {
                 return new Pair<>("No games found",null);
             } else {
                 return new Pair<>(list.toString(),null);
@@ -91,6 +91,12 @@ public class PostLoginClient {
         }
     }
     public Pair<String,GameData> joinGame(String... params) throws ResponseException {
+        if (!gameNumbers.contains(Integer.parseInt(params[0]))) {
+            return new Pair<>("Game ID not valid.",null);
+        }
+        if (params.length < 2) {
+            return new Pair<>("Error: Incorrect usage. (join <gameNumber> <playerColor>)",null);
+        }
         try {
             var data = server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType)).gameData();
             return new Pair<>(String.format("Joined game %s as color %s\n", params[0], params[1]),data);

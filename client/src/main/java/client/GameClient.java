@@ -41,8 +41,8 @@ public class GameClient {
     }
     public String printBoard(GameData gameData, AuthData authData) {
         ChessBoard board = gameData.game().getBoard();
-        StringBuilder sb = new StringBuilder();
         out.print(ERASE_SCREEN);
+        out.print(RESET);
 
         // Determine perspective: White (8 to 1) or Black (1 to 8)
         boolean isBlack = authData.username() != null && authData.username().equals(gameData.blackUsername());
@@ -52,18 +52,14 @@ public class GameClient {
 
         // Print column labels (always a to h)
         out.print("   ");
-        sb.append("   ");
         for (char col = 'a'; col <= 'h'; col++) {
             out.print(" " + col + " ");
-            sb.append(" ").append(col).append(" ");
         }
         out.print("\n");
-        sb.append("\n");
 
         // Print rows based on perspective
         for (int row = startRow; isBlack ? row <= endRow : row >= endRow; row += rowStep) {
             out.print(" " + row + " ");
-            sb.append(" ").append(row).append(" ");
             for (int col = 1; col <= 8; col++) { // Always 1 to 8 (a to h)
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 String pieceChar = (piece == null) ? " " : getPieceChar(piece);
@@ -76,16 +72,14 @@ public class GameClient {
                     out.print(SET_TEXT_COLOR_BLACK); // Black text on light
                 }
                 out.print(" " + pieceChar + " ");
-                sb.append(" ").append(pieceChar).append(" ");
                 out.print(RESET);
             }
             out.print("\n");
-            sb.append("\n");
         }
 
         out.print(RESET);
         out.flush();
-        return sb.toString();
+        return "";
     }
 
     private String getPieceChar(ChessPiece piece) {

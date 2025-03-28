@@ -82,6 +82,7 @@ public class Repl {
                 String line = scanner.nextLine();
                 try {
                     result = gameClient.eval(line, new AuthData(username,auth), gameData);
+                    System.out.print(BLUE + result);
                 } catch (Exception e) {
                     System.out.print(RED + e);
                 }

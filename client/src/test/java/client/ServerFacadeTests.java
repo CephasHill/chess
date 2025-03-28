@@ -39,6 +39,9 @@ public class ServerFacadeTests {
 
     @AfterAll
     static void stopServer() {
+        try {
+            facade.clearDatabase(new DeleteRequest("sql"));
+        } catch (Exception e) {}
         server.stop();
     }
 

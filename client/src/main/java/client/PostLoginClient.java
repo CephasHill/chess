@@ -68,7 +68,10 @@ public class PostLoginClient {
             int gamesNum = 0;
             for (GameData game : res.games()) {
                 gamesNum++;
-                list.append(STR."\{gamesNum} Name: \{game.gameName()} || White Player: \{game.whiteUsername()} || Black Player: \{game.blackUsername()}\n");
+                list.append(Integer.toString(gamesNum) +
+                        "Name: " + game.gameName() +
+                        " || White Player: " + game.whiteUsername() +
+                        " || Black Player: " + game.blackUsername() + "\n");
             }
             if (list.toString().isEmpty()) {
                 return new Pair<>("No games found",null);

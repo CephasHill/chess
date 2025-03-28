@@ -101,24 +101,7 @@ public class MySqlGameDAO {
 
                 // Fetch the updated game state
                 String selectGameQuery = "SELECT id, whiteUsername, blackUsername, gameName, chessGame FROM games WHERE id = ?";
-                try (PreparedStatement ps = conn.prepareStatement(selectGameQuery)) {
-                    ps.setInt(1, id);
-                    try (ResultSet rs = ps.executeQuery()) {
-                        if (rs.next()) {
-                            String jsonGame = rs.getString("chessGame");
-                            int jsonID = rs.getInt("id");
-                            String jsonWhiteUsername = rs.getString("whiteUsername");
-                            String jsonBlackUsername = rs.getString("blackUsername");
-                            String jsonGameName = rs.getString("gameName");
-                            Gson gson = new Gson();
-                            ChessGame game = gson.fromJson(jsonGame, ChessGame.class);
-                            conn.commit();
-                            return new GameData(jsonID, jsonWhiteUsername, jsonBlackUsername, jsonGameName, game); // Return the ChessGame object
-                        } else {
-                            throw new DataAccessException("Error: Game not found after update.");
-                        }
-                    }
-                }
+                return getGameData(id, conn, selectGameQuery);
             } catch (SQLException e) {
                 conn.rollback();
                 throw new DataAccessException("Error: Failed to join game: " + e.getMessage());
@@ -127,6 +110,27 @@ public class MySqlGameDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException("Error: Failed to join game: " + e.getMessage());
+        }
+    }
+
+    private static GameData getGameData(int id, Connection conn, String selectGameQuery) throws SQLException, DataAccessException {
+        try (PreparedStatement ps = conn.prepareStatement(selectGameQuery)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String jsonGame = rs.getString("chessGame");
+                    int jsonID = rs.getInt("id");
+                    String jsonWhiteUsername = rs.getString("whiteUsername");
+                    String jsonBlackUsername = rs.getString("blackUsername");
+                    String jsonGameName = rs.getString("gameName");
+                    Gson gson = new Gson();
+                    ChessGame game = gson.fromJson(jsonGame, ChessGame.class);
+                    conn.commit();
+                    return new GameData(jsonID, jsonWhiteUsername, jsonBlackUsername, jsonGameName, game);
+                } else {
+                    throw new DataAccessException("Error: Game not found after update.");
+                }
+            }
         }
     }
 

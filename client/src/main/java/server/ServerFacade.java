@@ -80,7 +80,7 @@ public class ServerFacade {
     }
 
     private String getAuthToken(Object request) {
-        if (request == null) return null;
+        if (request == null) {return null;}
         return switch (request) {
             case LogoutRequest r -> r.authToken();
             case CreateGameRequest r -> r.authorization();

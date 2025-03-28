@@ -24,9 +24,6 @@ public class GameClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "print" -> printBoard(data, authData);
-//                case "list" -> listGames(params);
-//                case "create" -> createGame(params);
-//                case "join" -> joinGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };

@@ -40,7 +40,9 @@ public class PreLoginClient {
                 var res = server.register(new RegisterRequest(params[0], params[1], params[2], storageType));
                 return new Pair<>(String.format("logged in as %s", username),res);
             } catch (ResponseException e) {
-                if (Objects.equals(e.getMessage(), "Cannot invoke \"java.lang.Double.intValue()\" because the return value of \"java.util.HashMap.get(Object)\" is null")) {
+                if (Objects.equals(e.getMessage(),
+                        "Cannot invoke \"java.lang.Double.intValue()\"" +
+                                "because the return value of \"java.util.HashMap.get(Object)\" is null")) {
                     return new Pair<>("Username already exists",null);
                 }
                 return new Pair<>("Error: " + e.getMessage(),null);

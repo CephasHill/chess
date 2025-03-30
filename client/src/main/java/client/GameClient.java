@@ -49,27 +49,30 @@ public class GameClient {
         int startRow = isBlack ? 1 : 8;
         int endRow = isBlack ? 8 : 1;
         int rowStep = isBlack ? 1 : -1;
+        int startCol = isBlack ? 8 : 1;
+        int endCol = isBlack ? 1 : 8;
+        int colStep = isBlack ? -1 : 1;
 
         // Print column labels (always a to h)
         out.print("   ");
-        for (char col = 'a'; col <= 'h'; col++) {
-            out.print(" " + col + " ");
+        for (int col = startCol; isBlack ? col >= endCol : col <= endCol; col += colStep) {
+            char colLabel = (char) ('a' + (col - 1)); // Convert 1-8 to a-h
+            out.print(" " + colLabel + " ");
         }
         out.print("\n");
 
-        // Print rows based on perspective
         for (int row = startRow; isBlack ? row <= endRow : row >= endRow; row += rowStep) {
             out.print(" " + row + " ");
-            for (int col = 1; col <= 8; col++) { // Always 1 to 8 (a to h)
+            for (int col = startCol; isBlack ? col >= endCol : col <= endCol; col += colStep) {
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 String pieceChar = (piece == null) ? " " : getPieceChar(piece);
 
-                if ((row + col) % 2 == 1) { // Dark squares (a1, c1, etc.)
+                if ((row + col) % 2 == 0) { // Dark squares (a1, c1, etc.)
                     out.print(SET_BG_COLOR_DARK_GREEN);
-                    out.print(SET_TEXT_COLOR_WHITE); // White text on dark
+                    out.print(SET_TEXT_COLOR_WHITE);
                 } else { // Light squares (b1, d1, etc.)
                     out.print(SET_BG_COLOR_WHITE);
-                    out.print(SET_TEXT_COLOR_BLACK); // Black text on light
+                    out.print(SET_TEXT_COLOR_BLACK);
                 }
                 out.print(" " + pieceChar + " ");
                 out.print(RESET);

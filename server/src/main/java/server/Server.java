@@ -58,6 +58,11 @@ public class Server {
         String authToken = request.headers("Authorization");
         var body = request.body();
         JoinGameRequest temp = gson.fromJson(body, JoinGameRequest.class);
+        try {
+            Integer.parseInt(String.valueOf(temp.gameID()));
+        } catch (NumberFormatException e) {
+            return gson.toJson(Map.of("message", "Error: Invalid game ID"));
+        }
         JoinGameRequest joinRequest = new JoinGameRequest(temp.playerColor(), temp.gameID(), authToken, storageType);
         JoinHandler handler = new JoinHandler();
         try {

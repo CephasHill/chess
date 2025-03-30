@@ -91,15 +91,35 @@ public class PostLoginClient {
         }
     }
     public Pair<String,GameData> joinGame(String... params) throws ResponseException {
-        if (!gameNumbers.contains(Integer.parseInt(params[0]))) {
-            return new Pair<>("Game ID not valid.",null);
-        }
+        String gameId;
+        String playerColor;
         if (params.length < 2) {
             return new Pair<>("Error: Incorrect usage. (join <gameNumber> <playerColor>)",null);
         }
         try {
-            var data = server.joinGame(new JoinGameRequest(params[1],Integer.parseInt(params[0]),auth,storageType)).gameData();
-            return new Pair<>(String.format("Joined game %s as color %s\n", params[0], params[1]),data);
+            gameId = params[0];
+        } catch (Exception e) {
+            return new Pair<>("Error: Incorrect usage. (join <gameNumber> <playerColor>)",null);
+        }
+        try {
+            playerColor = params[1];
+        } catch (Exception e) {
+            return new Pair<>("Error: Incorrect usage. (join <gameNumber> <playerColor>)",null);
+        }
+        try {
+            Integer.parseInt(gameId);
+        } catch (NumberFormatException e) {
+            return new Pair<>("Error: gameID must be type integer",null);
+        }
+        if (!playerColor.contentEquals("white") && !playerColor.contentEquals("black")) {
+            return new Pair<>("Error: playerColor must be \"black\" or \"white\"",null);
+        }
+        if (!gameNumbers.contains(Integer.parseInt(gameId))) {
+            return new Pair<>("Game ID not valid.",null);
+        }
+        try {
+            var data = server.joinGame(new JoinGameRequest(playerColor,Integer.parseInt(gameId),auth,storageType)).gameData();
+            return new Pair<>(String.format("Joined game %s as color %s\n", gameId, playerColor),data);
         } catch (ResponseException e) {
             return new Pair<>("Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()),null);
         }

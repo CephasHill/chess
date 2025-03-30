@@ -48,6 +48,8 @@ public class Repl {
                     System.out.println(RED + "Error: incorrect login or registration");
                 }
             } else if (state == State.SIGNEDIN) {
+                result = postLoginClient.eval("list", auth).getLeft();
+                gameNumbers = (ArrayList<Integer>) extractGameNumbers(result);
                 printPrompt();
                 String line = scanner.nextLine();
                 try {

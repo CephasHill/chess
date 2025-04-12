@@ -124,8 +124,40 @@ public class PostLoginClient {
         if (!gameNumbers.contains(Integer.parseInt(gameId))) {
             return new Pair<>("Game ID not valid.",null);
         }
+        // finding the right game
+        var res = server.listGames(new ListGamesRequest(auth, storageType));
+        GameData data = null;
+        for (GameData game : res.games()) {
+            if (game.gameID() == Integer.parseInt(gameId)) {
+                data = game;
+            }
+        }
+        if (data == null) {
+            return new Pair<>("Game ID not valid (CorrectGame variable null)",null);
+        }
+
+        // checking if this player is already in the game
+        boolean firstTime = true;
+        if (playerColor.contentEquals("white")) {
+            if (data.whiteUsername() != null) {
+                firstTime = false;
+                if (!data.whiteUsername().contentEquals(username)) {
+                    return new Pair<>("Error: White player not available",null);
+                }
+            }
+        } else {
+            if (data.blackUsername() != null) {
+                firstTime = false;
+                if (!data.blackUsername().contentEquals(username)) {
+                    return new Pair<>("Error: Black player not available",null);
+                }
+            }
+        }
+        // if they weren't in the game and the color is available
         try {
-            var data = server.joinGame(new JoinGameRequest(playerColor,Integer.parseInt(gameId),auth,storageType)).gameData();
+            if (firstTime) {
+                data = server.joinGame(new JoinGameRequest(playerColor,Integer.parseInt(gameId),auth,storageType)).gameData();
+            }
             System.out.print("step 1, PostLoginClient line 129 passed\n");
             ws.connect(data, new AuthData(username, auth));
             return new Pair<>(String.format("Joined game %s as color %s\n", gameId, playerColor),data);

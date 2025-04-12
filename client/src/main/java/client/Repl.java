@@ -92,6 +92,10 @@ public class Repl implements NotificationHandler {
                 String line = scanner.nextLine();
                 try {
                     result = gameClient.eval(line, new AuthData(username,auth), gameData);
+                    if (result.equalsIgnoreCase("leaving...")) {
+                        state = State.SIGNEDIN;
+                        System.out.print(RESET);
+                    }
                     System.out.print(BLUE + result);
                 } catch (Exception e) {
                     System.out.print(RED + e);

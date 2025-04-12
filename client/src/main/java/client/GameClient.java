@@ -24,6 +24,8 @@ public class GameClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "print" -> printBoard(data, authData);
+                case "redraw" -> printBoard(data, authData);
+                case "leave" -> "leaving...";
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -35,7 +37,8 @@ public class GameClient {
         return """
                 The following are valid commands:
                 - help
-                - print
+                - print / redraw
+                - leave
                 - quit
                 """;
     }

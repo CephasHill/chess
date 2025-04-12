@@ -18,7 +18,7 @@ public class Repl implements NotificationHandler {
     int port;
     WSFacade ws = new WSFacade(port, this);
     private final PreLoginClient preLoginClient;
-    private final PostLoginClient postLoginClient;
+    private PostLoginClient postLoginClient;
     private final GameClient gameClient;
     private State state = State.SIGNEDOUT;
     private String auth = null;
@@ -28,11 +28,10 @@ public class Repl implements NotificationHandler {
     public Repl(int port) throws ResponseException {
         this.port = port;
         preLoginClient = new PreLoginClient(port);
-        postLoginClient = new PostLoginClient(port, this);
         gameClient = new GameClient();
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         state = State.SIGNEDOUT;
         System.out.println("Welcome to chess. Enter \"help\" to start.");
         Scanner scanner = new Scanner(System.in);
@@ -55,6 +54,7 @@ public class Repl implements NotificationHandler {
                     System.out.println(RED + "Error: incorrect login or registration");
                 }
             } else if (state == State.SIGNEDIN) {
+                postLoginClient = new PostLoginClient(port, this, username);
                 result = postLoginClient.eval("list", auth).getLeft();
                 gameNumbers = (ArrayList<Integer>) extractGameNumbers(result);
                 printPrompt();

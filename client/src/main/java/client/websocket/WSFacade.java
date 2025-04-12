@@ -2,6 +2,7 @@ package client.websocket;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.AuthData;
 import model.GameData;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
@@ -37,7 +38,7 @@ public class WSFacade {
         }
     }
 
-    public void connect(GameData data, String auth) throws ResponseException {
+    public void connect(GameData data, AuthData auth) throws ResponseException {
         try {
             this.session.getBasicRemote().sendObject(new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, data.gameID()));
         } catch (Exception e) {

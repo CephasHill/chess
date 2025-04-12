@@ -6,13 +6,15 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import websocket.commands.UserGameCommand;
 
 public class WebSocketHandler {
+    private final ConnectionManager connections = new ConnectionManager();
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
         try {
             Gson gson = new Gson();
             UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
             switch (command.getCommandType()) {
-                case CONNECT -> connect();
+                case CONNECT -> connect(command);
                 case MAKE_MOVE -> makeMove();
                 case LEAVE -> leave();
                 case RESIGN -> resign();
@@ -22,7 +24,8 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect() {
+    private void connect(UserGameCommand command) {
+        connections.add(command.getAuthToken())
     }
 
     private void makeMove() {

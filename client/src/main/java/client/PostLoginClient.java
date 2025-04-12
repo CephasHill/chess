@@ -3,6 +3,7 @@ package client;
 import client.websocket.NotificationHandler;
 import client.websocket.WSFacade;
 import exception.ResponseException;
+import model.AuthData;
 import model.GameData;
 import model.Pair;
 import model.request.CreateGameRequest;
@@ -20,9 +21,11 @@ public class PostLoginClient {
     private final WSFacade ws;
     private final String storageType = "sql";
     private String auth = null;
-    public PostLoginClient(int port, NotificationHandler notificationHandler) throws ResponseException {
+    private String username;
+    public PostLoginClient(int port, NotificationHandler notificationHandler, String username) throws ResponseException {
         server = new ServerFacade(port);
         ws = new WSFacade(port, notificationHandler);
+        this.username = username;
     }
     public Pair<String,GameData> eval(String input, String auth) {
         try {
@@ -123,7 +126,7 @@ public class PostLoginClient {
         }
         try {
             var data = server.joinGame(new JoinGameRequest(playerColor,Integer.parseInt(gameId),auth,storageType)).gameData();
-            ws.connect(data, auth);
+            ws.connect(data, new AuthData(username, auth));
             return new Pair<>(String.format("Joined game %s as color %s\n", gameId, playerColor),data);
         } catch (ResponseException e) {
             return new Pair<>("Error: " + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()),null);

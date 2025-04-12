@@ -1,6 +1,7 @@
 package client.websocket;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -11,6 +12,7 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 public class WSFacade extends Endpoint {
     Session session;
@@ -29,7 +31,24 @@ public class WSFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String message) {
-                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    Gson gson = new Gson();
+                    JsonObject json = gson.fromJson(message, JsonObject.class);
+
+                    String typeString = json.get("serverMessageType").getAsString();
+                    ServerMessage.ServerMessageType type = switch (typeString) {
+                        case "NOTIFICATION" -> ServerMessage.ServerMessageType.NOTIFICATION;
+                        case "LOAD_GAME" -> ServerMessage.ServerMessageType.LOAD_GAME;
+                        default -> ServerMessage.ServerMessageType.ERROR;
+                    };
+                    String msg = json.get("message").getAsString() + "\n";
+
+                    String serverMessageJson = gson.toJson(Map.of("data", msg, "type", type));
+                    ServerMessage serverMessage = new ServerMessage(type, msg) {
+                        @Override
+                        public Object getData() {
+                            return msg;
+                        }
+                    };
                     notificationHandler.notify(serverMessage);
                 }
             });
@@ -44,8 +63,10 @@ public class WSFacade extends Endpoint {
     }
 
     public void connect(GameData data, AuthData authData) throws ResponseException {
+        System.out.print("step2, entered WSFacade.connect\n");
         try {
-            this.session.getBasicRemote().sendObject(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData, data.gameID()));
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData, data.gameID());
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception e) {
             throw new ResponseException(500, "WSFacade.connect: " + e.getMessage());
         }

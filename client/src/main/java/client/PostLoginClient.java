@@ -126,6 +126,7 @@ public class PostLoginClient {
         }
         try {
             var data = server.joinGame(new JoinGameRequest(playerColor,Integer.parseInt(gameId),auth,storageType)).gameData();
+            System.out.print("step 1, PostLoginClient line 129 passed\n");
             ws.connect(data, new AuthData(username, auth));
             return new Pair<>(String.format("Joined game %s as color %s\n", gameId, playerColor),data);
         } catch (ResponseException e) {

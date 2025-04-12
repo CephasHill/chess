@@ -1,5 +1,7 @@
 package websocket.commands;
 
+import model.AuthData;
+
 import java.util.Objects;
 
 /**
@@ -16,10 +18,13 @@ public class UserGameCommand {
 
     private final Integer gameID;
 
-    public UserGameCommand(CommandType commandType, String authToken, Integer gameID) {
+    private final AuthData authData;
+
+    public UserGameCommand(CommandType commandType, AuthData authData, Integer gameID) {
         this.commandType = commandType;
-        this.authToken = authToken;
+        this.authToken = authData.authToken();
         this.gameID = gameID;
+        this.authData = authData;
     }
 
     public enum CommandType {
@@ -40,6 +45,8 @@ public class UserGameCommand {
     public Integer getGameID() {
         return gameID;
     }
+
+    public AuthData getAuthData() { return authData; }
 
     @Override
     public boolean equals(Object o) {

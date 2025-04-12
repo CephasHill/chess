@@ -38,9 +38,9 @@ public class WSFacade {
         }
     }
 
-    public void connect(GameData data, AuthData auth) throws ResponseException {
+    public void connect(GameData data, AuthData authData) throws ResponseException {
         try {
-            this.session.getBasicRemote().sendObject(new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, data.gameID()));
+            this.session.getBasicRemote().sendObject(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData, data.gameID()));
         } catch (Exception e) {
             throw new ResponseException(500, "WSFacade.connect: " + e.getMessage());
         }

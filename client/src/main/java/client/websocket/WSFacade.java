@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class WSFacade {
+public class WSFacade extends Endpoint {
     Session session;
     NotificationHandler notificationHandler;
 
@@ -34,8 +34,13 @@ public class WSFacade {
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
-            throw new ResponseException(500, "WSFacade constructor:" + ex.getMessage());
+            throw new ResponseException(500, "WSFacade constructor: " + ex.getMessage());
         }
+    }
+
+    //Endpoint requires this method, but you don't have to do anything
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
     public void connect(GameData data, AuthData authData) throws ResponseException {

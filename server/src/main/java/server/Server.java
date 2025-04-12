@@ -24,6 +24,8 @@ public class Server {
 
     public static MemoryDatabase database = new MemoryDatabase();
 
+    private final WebSocketHandler webSocketHandler = new WebSocketHandler();
+
     public static MemoryDatabase getDatabase() {
         return database;
     }
@@ -43,7 +45,7 @@ public class Server {
         }
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
-        Spark.webSocket("/ws", WebSocketHandler.class);
+        Spark.webSocket("/ws", webSocketHandler);
         Spark.delete("/db", this::clearDB);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::login);

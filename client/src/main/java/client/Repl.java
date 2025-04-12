@@ -16,7 +16,7 @@ import static client.EscapeSequences.*;
 
 public class Repl implements NotificationHandler {
     int port;
-    WSFacade ws = new WSFacade(port, this);
+    WSFacade ws;
     private final PreLoginClient preLoginClient;
     private PostLoginClient postLoginClient;
     private final GameClient gameClient;
@@ -29,6 +29,7 @@ public class Repl implements NotificationHandler {
         this.port = port;
         preLoginClient = new PreLoginClient(port);
         gameClient = new GameClient();
+        ws = new WSFacade(port, this);
     }
 
     public void run() throws ResponseException {

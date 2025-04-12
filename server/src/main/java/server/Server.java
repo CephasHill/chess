@@ -11,6 +11,7 @@ import model.request.CreateGameRequest;
 import model.request.JoinGameRequest;
 import model.request.ListGamesRequest;
 import model.result.*;
+import server.websocket.WebSocketHandler;
 import spark.*;
 
 import java.sql.SQLException;
@@ -42,6 +43,7 @@ public class Server {
         }
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+        Spark.webSocket("/ws", WebSocketHandler.class);
         Spark.delete("/db", this::clearDB);
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::login);

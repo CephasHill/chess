@@ -1,8 +1,12 @@
 package client;
 
 import chess.ChessGame;
+import client.websocket.NotificationHandler;
+import client.websocket.WSFacade;
+import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
+import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +14,9 @@ import java.util.Scanner;
 
 import static client.EscapeSequences.*;
 
-public class Repl {
+public class Repl implements NotificationHandler {
+    int port;
+    WSFacade ws = new WSFacade(port, this);
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
     private final GameClient gameClient;
@@ -19,9 +25,10 @@ public class Repl {
     private String username = null;
     public static ArrayList<Integer> gameNumbers = new ArrayList<>();
 
-    public Repl(int port) {
+    public Repl(int port) throws ResponseException {
+        this.port = port;
         preLoginClient = new PreLoginClient(port);
-        postLoginClient = new PostLoginClient(port);
+        postLoginClient = new PostLoginClient(port, this);
         gameClient = new GameClient();
     }
 
@@ -128,5 +135,19 @@ public class Repl {
         }
 
         return numbers;
+    }
+
+    @Override
+    public void notify(ServerMessage notification) {
+        switch (notification.getServerMessageType()) {
+            case ServerMessage.ServerMessageType.ERROR:
+                System.out.print(notification.getData());
+            case ServerMessage.ServerMessageType.LOAD_GAME:
+                System.out.print(notification.getData());
+            case ServerMessage.ServerMessageType.NOTIFICATION:
+                System.out.print(notification.getData());
+            default:
+                throw new IllegalStateException("Unexpected value: " + notification);
+        }
     }
 }

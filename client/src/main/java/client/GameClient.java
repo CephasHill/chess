@@ -25,7 +25,7 @@ public class GameClient {
             return switch (cmd) {
                 case "print" -> printBoard(data, authData);
                 case "redraw" -> printBoard(data, authData);
-                case "leave" -> "leaving...";
+                case "leave" -> leave(data, authData);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -33,6 +33,11 @@ public class GameClient {
             return e.getMessage();
         }
     }
+
+    private String leave(GameData data, AuthData authData) {
+        return "leaving...";
+    }
+
     public String help() {
         return """
                 The following are valid commands:

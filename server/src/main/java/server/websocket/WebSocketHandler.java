@@ -17,7 +17,6 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
-        System.out.print("Message received on WebSocketHandler\n");
         this.session = session;
         try {
             Gson gson = new Gson();
@@ -36,8 +35,8 @@ public class WebSocketHandler {
     private void connect(UserGameCommand command) throws IOException {
         System.out.println("step3, entered WebSocketHandler.connect\n");
 
-        String username = command.getAuthData().username();
-        String authToken = command.getAuthData().authToken();
+        String username = "temp";
+        String authToken = command.getAuthToken();
         connections.add(username, session);
         var message = String.format("%s connected to the game", username);
         var serverMessage = new NotificationMessage(message);

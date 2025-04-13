@@ -45,6 +45,8 @@ public class ServerFacade {
         return makeRequest("PUT", "/game", req, JoinGameResult.class);
     }
 
+
+
     public void clearDatabase(DeleteRequest req) throws ResponseException {
         makeRequest("DELETE", "/db", req, DeleteResult.class);
     }

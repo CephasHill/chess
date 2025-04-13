@@ -65,7 +65,7 @@ public class WSFacade extends Endpoint {
     public void connect(GameData data, AuthData authData) throws ResponseException {
         System.out.print("step2, entered WSFacade.connect\n");
         try {
-            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData, data.gameID());
+            UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData.authToken(), data.gameID());
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (Exception e) {
             throw new ResponseException(500, "WSFacade.connect: " + e.getMessage());

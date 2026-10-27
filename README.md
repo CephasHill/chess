@@ -1,19 +1,19 @@
 # BYU CS 240 Chess
 
-This repository contains a partially completed multiplayer chess project from
-BYU's CS 240 course (Winter 2025). It is a Java client/server application with
-three Maven modules:
+This repository contains a modular multiplayer chess application built in Java
+for BYU's CS 240 course (Winter 2025). It uses a client/server architecture
+with three Maven modules:
 
 - **`shared`** contains the chess model, request/response records, and
   WebSocket message types shared by the client and server.
 - **`server`** contains the Spark HTTP server, services, data-access objects,
-  and the beginning of the WebSocket server.
+  persistence implementations, and WebSocket infrastructure.
 - **`client`** contains a command-line REPL, HTTP client facade, terminal board
-  renderer, and the beginning of a WebSocket client.
+  renderer, and WebSocket client components.
 
-The project is unfinished. The chess rules and pre-game server workflow are
-substantially implemented, but the networked in-game move workflow was not
-completed.
+The project demonstrates chess-rule validation, authentication, game
+management, HTTP APIs, persistence, and the design of a networked gameplay
+workflow.
 
 ## What is implemented
 
@@ -84,21 +84,21 @@ The board renderer can display a game from the white or black perspective.
 However, the client currently does not provide a command for making a chess
 move.
 
-## What remains unfinished
+## Current scope and future work
 
-The following areas are present as scaffolding or partial implementations
-rather than complete features:
+The core chess model, authentication flow, game management, and HTTP API are
+implemented. The following items represent opportunities for continued
+development:
 
-- The server WebSocket handler recognizes `CONNECT`, `MAKE_MOVE`, `LEAVE`, and
-  `RESIGN`, but only `CONNECT` has a placeholder implementation. The other
-  handlers are empty.
-- WebSocket connection handling currently uses a temporary username instead of
-  resolving the authenticated user and game from the command.
-- The client can open a WebSocket connection and send a `CONNECT` command, but
-  it does not send moves or implement leave/resign gameplay.
-- `observe` only validates a listed game number and does not establish a real
-  observer connection or load the selected game.
-- The client displays the board but does not update it from server-side moves.
+- Complete server-side WebSocket handling for `MAKE_MOVE`, `LEAVE`, and
+  `RESIGN` so those gameplay actions are processed end-to-end.
+- Resolve authenticated users and selected games from WebSocket commands instead
+  of using a temporary username placeholder during connection handling.
+- Add client gameplay commands that send moves and support leave/resign flows
+  over the existing WebSocket connection.
+- Expand the `observe` workflow so selecting a listed game establishes a real
+  observer connection and loads the selected game state.
+- Synchronize board state updates from server-side moves to connected clients.
 - SQL configuration is not included in this repository. The server expects a
   `db.properties` resource with MySQL connection settings before the default
   SQL mode can start.
